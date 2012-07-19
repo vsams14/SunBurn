@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 
 public class Config{
 
-	boolean bPlayer, metrics = true, bAnimal, disabled, armor = true;
+	boolean bPlayer, bAnimal, disabled, armor = true;
 	int pb, cd = 5;
 	List<String> worlds;
 	List<String> pwl;
@@ -58,10 +58,6 @@ public class Config{
 		sunburn.util.armtype = conf.getString("Armor_Type");
 		armor = conf.getBoolean("Armor_On");
 		cd = conf.getInt("chunk_depth");
-		String s = conf.getString("metrics");
-		if(s!=null){
-			metrics = conf.getBoolean("metrics");
-		}
 	}
 
 	public void addExceptions(){
@@ -111,7 +107,6 @@ public class Config{
 				worldConfig.setDefaults(defConfig);
 			}
 			worldConfig.set("version", sunburn.getDescription().getVersion());
-			worldConfig.set("metrics", metrics);
 			worldConfig.set("burn_damage", pb);
 			worldConfig.set("burn_animals", bAnimal);
 			worldConfig.set("burn_players", bPlayer);

@@ -13,7 +13,6 @@
 # durability is 1-5 (whole numbers)
 
 version: 1.7.3
-metrics: true
 burn_damage: 0
 burn_animals: true
 burn_players: true
