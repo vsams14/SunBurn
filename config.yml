@@ -1,0 +1,25 @@
+# Damage per burn:
+# 1 = 1/2 hearts
+# These values are EXTRA damage. 
+# Normal fire damage (1/2 hearts) will still be dealt.
+# -----------------
+# chunk_depth controls wasteland generation.
+# a larger depth means more blocks will be affected.
+# this also means it will take more time to generate,
+# and your server may crash. > 15 is NOT recommended!
+# -----------------
+# Armors:
+# types: leather, iron, gold, chain, diamond
+# durability is 1-5 (whole numbers)
+
+version: 1.7.3
+metrics: true
+burn_damage: 0
+burn_animals: true
+burn_players: true
+chunk_depth: 5
+Armor_Type: CHAIN
+Durability: 5
+Armor_On: true
+worlds:
+exclude_players:

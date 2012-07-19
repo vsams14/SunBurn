@@ -1,0 +1,67 @@
+name: SunBurn2
+main: com.github.vsams14.SunBurn
+version: 1.7.3
+author: vsams14
+
+commands:
+   burn:
+      description: Sets a player on fire.
+      usage: Please see http://dev.bukkit.org/server-mods/sunburn-reborn/
+      
+   usmite:
+      description: Uber Smite!
+      usage: /usmite [player] [#_of_times]
+      
+permissions:
+   sunburn.*:
+      description: Gives access to all SunBurn nodes.
+      children:
+         sunburn.protect: true
+         sunburn.toggle: true
+         sunburn.pburn: true
+         sunburn.waste: true
+         sunburn.time: true
+         sunburn.usmite: true
+      default: op
+      
+   sunburn.protect:
+      description: Protects the player from sunburn
+      default: op
+      
+   sunburn.toggle:
+      description: Allows toggling of plugin functions.
+      children:
+         sunburn.toggle.player: true
+         sunburn.toggle.mob: true
+         sunburn.toggle.armor: true
+      default: op
+      
+   sunburn.toggle.player:
+      description: Toggle the player burning functions.
+      default: op
+      
+   sunburn.toggle.mob:
+      description: Toggle the mob burning functions.
+      default: op
+      
+   sunburn.toggle.armor:
+      description: Toggle the protective armor server-wide.
+      default: op
+      
+   sunburn.pburn:
+      description: Directly burn a player with commands.
+      default: op
+      
+   sunburn.waste:
+      description: Allows you to generate wasteland.
+      default: op
+      
+   sunburn.time:
+      description: Lets you lock time, and future time functions.
+      default: op
+      
+   sunburn.usmite:
+      description: Lets you ultra-smite other players!
+      default: op
+      
+         

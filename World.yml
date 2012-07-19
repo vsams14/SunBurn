@@ -1,0 +1,18 @@
+# Time Control:
+# Standard Dawn - 1800
+# Standard Day - 12000
+# Standard Dusk - 1800
+# Standard Night - 8400
+# -----------------
+# Don't mess with locktime
+# or wdur if you don't
+# know what you are doing!
+
+WorldName: World
+locked: false
+locktime: 1
+wdur: false
+sunrise_length: 1800
+day_length: 12000
+sunset_length: 1800
+night_length: 8400
