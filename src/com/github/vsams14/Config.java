@@ -96,31 +96,29 @@ public class Config{
 	}
 
 	public void reConf(){
-		String node = conf.getString("version");
 		worldConfig = new YamlConfiguration();
-		if((node==null)||(!node.equalsIgnoreCase(sunburn.getDescription().getVersion()))){
-			File f = new File(sunburn.getDataFolder(), "config.yml");
-			f.delete();
-			InputStream d = sunburn.getResource("config.yml");
-			if (d != null) {
-				YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(d);
-				worldConfig.setDefaults(defConfig);
-			}
-			worldConfig.set("version", sunburn.getDescription().getVersion());
-			worldConfig.set("burn_damage", pb);
-			worldConfig.set("burn_animals", bAnimal);
-			worldConfig.set("burn_players", bPlayer);
-			worldConfig.set("chunk_depth", cd);
-			worldConfig.set("Armor_Type", sunburn.util.armtype);
-			worldConfig.set("Durability", sunburn.util.durability);
-			worldConfig.set("Armor_On", armor);
-			worldConfig.set("worlds", worlds);
-			worldConfig.set("exclude_players", pwl);
-			saveConf(worldConfig, f);
+
+		File f = new File(sunburn.getDataFolder(), "config.yml");
+		f.delete();
+		InputStream d = sunburn.getResource("config.yml");
+		if (d != null) {
+			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(d);
+			worldConfig.setDefaults(defConfig);
 		}
+		worldConfig.set("version", sunburn.getDescription().getVersion());
+		worldConfig.set("burn_damage", pb);
+		worldConfig.set("burn_animals", bAnimal);
+		worldConfig.set("burn_players", bPlayer);
+		worldConfig.set("chunk_depth", cd);
+		worldConfig.set("Armor_Type", sunburn.util.armtype);
+		worldConfig.set("Durability", sunburn.util.durability);
+		worldConfig.set("Armor_On", armor);
+		worldConfig.set("worlds", worlds);
+		worldConfig.set("exclude_players", pwl);
+		saveConf(worldConfig, f);
 
 		for(World world : sunburn.getServer().getWorlds()){
-			File f = new File(sunburn.getDataFolder(), world.getName()+".yml");
+			f = new File(sunburn.getDataFolder(), world.getName()+".yml");
 			worldConfig = new YamlConfiguration();
 			loadcConf(f, sunburn.getResource("World.yml"));
 			if(sunburn.util.isInteger(worldConfig.getString("wdur"))){

@@ -27,19 +27,20 @@ public class SunBurn extends JavaPlugin {
 		log = this.getLogger();
 		new LoginListener(this);
 		
-		try {
-		    Metrics metrics = new Metrics(this);
-		    metrics.start();
-		} catch (IOException e) {
-		    // Failed to submit the data :-(
-		}
-		
 		config.loadConf();
 		config.reConf();
 		util.loadArmor();
 		config.genConf();
 		
 		update.readRSS();
+		
+		try {
+		    Metrics metrics = new Metrics(this);
+		    metrics.findCustomData(this);
+		    metrics.start();
+		} catch (IOException e) {
+		    // Failed to submit the data :-(
+		}
 
 		if((!config.bPlayer) && (!config.bAnimal)){
 			config.disabled = true;
@@ -134,7 +135,9 @@ public class SunBurn extends JavaPlugin {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
 		if(!update.off){
-			return com.com(sender, cmd, commandLabel, args);
+			boolean ret = com.com(sender, cmd, commandLabel, args);
+			config.reConf();
+			return ret;
 		}else{
 			getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Waiting for update. Sunburn is disabled");
 			log.info("Waiting for update. Sunburn is disabled");

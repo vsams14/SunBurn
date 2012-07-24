@@ -63,15 +63,16 @@ public class Metrics {
 	private static final String CUSTOM_DATA_SEPARATOR = "~~";
 	private static final int PING_INTERVAL = 10;
 	private final Plugin plugin;
+	private SunBurn sunburn;
 	private Map<Plugin, Set<Graph>> graphs = Collections.synchronizedMap(new HashMap<Plugin, Set<Graph>>());
-	private Map<Plugin, Graph> defaultGraphs = Collections.synchronizedMap(new HashMap<Plugin, Graph>());
+	private Graph customGraph;
 	private final YamlConfiguration configuration;
 	private final File configurationFile;
 	private final String guid;
 	private final Object optOutLock = new Object();
 	private volatile int taskId = -1;
 
-	public Metrics(final SunBurn plugin) throws IOException {
+	public Metrics(final Plugin plugin) throws IOException {
 		if (plugin == null) {
 			throw new IllegalArgumentException("Plugin cannot be null");
 		}
@@ -120,25 +121,6 @@ public class Metrics {
 		}
 
 		return theGraphs;
-	}
-
-	private Graph getOrCreateDefaultGraph(Plugin plugin){
-		Graph graph = (Graph)this.defaultGraphs.get(plugin);
-
-		if (graph == null) {
-			graph = new Graph(Metrics.Graph.Type.Line, "Default");
-			this.defaultGraphs.put(plugin, graph);
-		}
-
-		return graph;
-	}
-
-	public synchronized void addCustomData(Plugin plugin, Plotter plotter){
-		Graph graph = getOrCreateDefaultGraph(plugin);
-
-		graph.addPlotter(plotter);
-
-		getOrCreateGraphs(plugin).add(graph);
 	}
 
 	public boolean start() {
@@ -247,6 +229,8 @@ public class Metrics {
 		// The plugin's description file containg all of the plugin data such as name, version, author, etc
 		final PluginDescriptionFile description = plugin.getDescription();
 
+		addCustomData();
+
 		// Construct the post data
 		final StringBuilder data = new StringBuilder();
 		data.append(encode("guid")).append('=').append(encode(guid));
@@ -320,7 +304,7 @@ public class Metrics {
 			// Is this the first update this hour?
 			if (response.contains("OK This is your first update this hour")) {
 				synchronized (graphs) {
-					Set<Graph> valuesInSet = graphs.get(plugin);
+					Set<Graph> valuesInSet = getOrCreateGraphs(plugin);
 					final Iterator<Graph> iter = valuesInSet.iterator();
 
 					while (iter.hasNext()) {
@@ -445,31 +429,32 @@ public class Metrics {
 	}
 
 
-	public void findCustomData(SunBurn plugin){
-		Graph burn = createGraph(plugin, Metrics.Graph.Type.Pie, "Burning");
-	    String burning;
+	public void findCustomData(SunBurn sunburn){
+		this.sunburn = sunburn;
+		customGraph = createGraph(sunburn, Metrics.Graph.Type.Line, "Burning");
+	}
 
-	    boolean bp = plugin.config.bPlayer;
-	    boolean ba = plugin.config.bAnimal;
-	    
-	    if(bp&&ba){
-	    	burning = "All On";
-	    }else if(bp&&(!ba)){
-	    	burning = "Only Players";
-	    }else if(ba&&(!bp)){
-	    	burning = "Only Mobs";
-	    }else{
-	    	burning = "All Off";
-	    }
-	    
-	    burn.addPlotter(new Plotter(burning)
-	    {
-	      public int getValue()
-	      {
-	        return 1;
-	      }
-	    });
-		
+	public void addCustomData(){
+		String burning;
+
+		boolean bp = sunburn.config.bPlayer;
+		boolean ba = sunburn.config.bAnimal;
+
+		if(bp&&ba){
+			burning = "All On";
+		}else if(bp&&(!ba)){
+			burning = "Only Players";
+		}else if(ba&&(!bp)){
+			burning = "Only Mobs";
+		}else{
+			burning = "All Off";
+		}
+		sunburn.log.info("Sending: "+burning);
+		customGraph.addPlotter(new Plotter(burning){
+			public int getValue(){
+				return 1;
+			}
+		});
 	}
 
 }
