@@ -22,11 +22,9 @@ permissions:
          sunburn.waste: true
          sunburn.time: true
          sunburn.usmite: true
-      default: op
       
    sunburn.protect:
       description: Protects the player from sunburn
-      default: op
       
    sunburn.toggle:
       description: Allows toggling of plugin functions.
