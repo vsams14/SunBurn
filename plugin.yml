@@ -1,7 +1,7 @@
 name: SunBurn2
 main: com.github.vsams14.SunBurn
 version: 1.7.4
-authors: [vsams14, jkubs15] 
+author: vsams14 
 
 commands:
    burn:
