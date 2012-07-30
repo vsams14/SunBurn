@@ -55,19 +55,20 @@ public class Update{
 		}
 
 		try {
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			Document doc = builder.parse(u.openStream());
-			Element element = (Element)doc.getElementsByTagName("item").item(0);
-			title = getElementValue(element, "title");
-			link = getElementValue(element, "link");
-			thisversion = sunburn.getDescription().getVersion().replaceAll("\\D+", "");
-			version = thisversion;
+			
 			if(isInternetReachable()){
+				DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+				Document doc = builder.parse(u.openStream());
+				Element element = (Element)doc.getElementsByTagName("item").item(0);
+				title = getElementValue(element, "title");
+				link = getElementValue(element, "link");
+				thisversion = sunburn.getDescription().getVersion().replaceAll("\\D+", "");
 				version = title.replaceAll("\\D+", "");
+			}else{
+				thisversion = sunburn.getDescription().getVersion().replaceAll("\\D+", "");
+				version = thisversion;
 			}
 		} catch (Exception e) {
-			thisversion = sunburn.getDescription().getVersion().replaceAll("\\D+", "");
-			version = thisversion;
 		}
 
 	}
