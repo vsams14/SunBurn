@@ -3,10 +3,8 @@ package com.github.vsams14;
 import java.io.File;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.Chunk;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -137,135 +135,12 @@ public class Commands {
 						}else if(args[0].equalsIgnoreCase("chunk")){
 							if((sendee.hasPermission("sunburn.waste"))||(sendee.isOp())){
 								sendee.sendMessage("[\u00A74Sunburn\u00A7f] Starting...");
-								Location edge = sendee.getLocation();
-								edge.setX((int)(edge.getX()));
-								edge.setY((int)(edge.getY()));
-								edge.setZ((int)(edge.getZ()));
-								Location loc = edge;
-								Location block = edge;
-
-								double chunkx = loc.getX()%16;
-								double chunkz = loc.getZ()%16;
-								double chunky = 0;
-
-								switch(sunburn.util.getQuad(block.getX(), block.getZ())){
-
-								case 1:
-									if(chunkx!=0){
-										edge.setX((int)(edge.getX()-chunkx));
-									}
-									if(chunkz!=0){
-										edge.setZ((int)(edge.getZ()-chunkz));
-									}
-									break;
-
-								case 2:
-									if(chunkx!=0){
-										edge.setX((int)(edge.getX()+chunkx-16));
-									}
-									if(chunkz!=0){
-										edge.setZ((int)(edge.getZ()-chunkz));
-									}
-									break;
-
-								case 3:
-									if(chunkx!=0){
-										edge.setX((int)(edge.getX()+chunkx-16));
-									}
-									if(chunkz!=0){
-										edge.setZ((int)(edge.getZ()+chunkz-16));
-									}
-									break;
-
-								case 4:
-									if(chunkx!=0){
-										edge.setX((int)(edge.getX()-chunkx));
-									}
-									if(chunkz!=0){
-										edge.setZ((int)(edge.getZ()+chunkz-16));
-									}
-									break;
+								
+								Chunk chunk = sendee.getLocation().getChunk();
+								if(sunburn.util.burnChunk(chunk)){
+									sendee.sendMessage("[\u00A74Sunburn\u00A7f] Done!");
+									return true;
 								}
-								edge.setX(edge.getX()-16);
-								edge.setZ(edge.getZ()-16);
-
-								//sunburn.getServer().broadcastMessage("Chunk starts at: X: "+edge.getX()+" Z: "+edge.getZ());
-								chunkx = edge.getX();
-								chunky = edge.getY();
-								chunkz = edge.getZ();
-
-								for(int ix = 0; ix < 3; ix+=1){
-									//sunburn.getServer().broadcastMessage("Pass: "+ix);
-									for(double cx = 0; cx < 48; cx+=1){
-										for(double cz = 0; cz < 48; cz+=1){
-											chunky = sunburn.util.getGround(chunkx+cx,chunkz+cz,sendee);
-											for(double cy = chunky; (chunky-cy) < sunburn.config.cd; cy-=1){
-
-
-												block.setX(chunkx+cx);
-												block.setZ(chunkz+cz);
-												block.setY(cy);
-
-												//sunburn.getServer().broadcastMessage("Block at X: "+block.getX()+" Z: "+block.getZ());
-
-												if(cy>0){
-													//sunburn.getServer().broadcastMessage("In main loop!");
-													Block b3 = sendee.getWorld().getBlockAt(block);
-													if(b3.getType()==Material.BEDROCK){
-														continue;
-													}
-
-													double rand = 0;
-
-													if(b3.getType() == Material.GRASS){
-														b3.setType(Material.DIRT);
-													}else if((b3.getType() == Material.WATER)||(b3.getType() == Material.STATIONARY_WATER)){
-														b3.setType(Material.AIR);
-													}else if(b3.getType() == Material.STONE){
-														b3.setType(Material.SANDSTONE);
-													}else if(b3.getType() == Material.DIRT){
-														rand = Math.random()*100;
-														rand = (int) rand;
-														if(rand%4 == 0){
-															b3.setType(Material.SAND);
-														}
-													}else if((b3.getType()==Material.CACTUS)||
-															(b3.getType()==Material.CROPS)||
-															(b3.getType()==Material.DEAD_BUSH)||
-															(b3.getType()==Material.BOOKSHELF)||
-															(b3.getType()==Material.FENCE)||(b3.getType()==Material.ICE)||
-															(b3.getType()==Material.FENCE_GATE)||
-															(b3.getType()==Material.GRASS)||(b3.getType()==Material.SNOW)||
-															(b3.getType()==Material.HUGE_MUSHROOM_1)||
-															(b3.getType()==Material.HUGE_MUSHROOM_2)||
-															(b3.getType()==Material.LONG_GRASS)||
-															(b3.getType()==Material.MELON_BLOCK)||
-															(b3.getType()==Material.MYCEL)||(b3.getType()==Material.PUMPKIN)||
-															(b3.getType()==Material.RED_MUSHROOM)||(b3.getType()==Material.RED_ROSE)||
-															(b3.getType()==Material.SAPLING)||(b3.getType()==Material.TNT)||
-															(b3.getType()==Material.VINE)||
-															(b3.getType()==Material.WOOD_DOOR)||(b3.getType()==Material.WOOD_STAIRS)||
-															(b3.getType()==Material.WOODEN_DOOR)||(b3.getType()==Material.WOOL)||
-															(b3.getType()==Material.WORKBENCH)||(b3.getType()==Material.YELLOW_FLOWER)){
-
-														b3.setType(Material.AIR);
-
-													}else if((b3.getType()==Material.LEAVES)||
-															(b3.getType()==Material.WOOD)||
-															(b3.getType()==Material.LOG)){
-														block.setY(cy+1);
-														b3 = sendee.getWorld().getBlockAt(block);
-														if(b3.getType()==Material.AIR){
-															b3.setType(Material.FIRE);
-														}
-													}
-												}
-											}		
-										}
-									}
-								}
-								sendee.sendMessage("[\u00A74Sunburn\u00A7f] Done!");
-								return true;
 							}
 							return false;
 						}

@@ -1,6 +1,6 @@
 package com.github.vsams14;
 
-import org.bukkit.Location;
+import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -35,23 +35,17 @@ public class Util {
 		}  
 	}
 
-	public double getGround(double x, double z, Player p){
-		int count = 0;
-		double y;
-		Location loc3 = p.getLocation();
-		loc3.setX(x);
-		loc3.setZ(z);
-		Block block2;
+	public double getGround(int x, int z, Chunk c){
+		int count = 0, y;
+		Block b2;
 		for(y = 255; count <2; y-=1){
 			if(y>0){
-				loc3.setY(y);
-				block2 = p.getWorld().getBlockAt(loc3);
-				if(block2.getTypeId()!=0){
-					if(block2.getType()==Material.LEAVES){
-						loc3.setY(y+1);
-						block2 = p.getWorld().getBlockAt(loc3);
-						if(block2.getTypeId()==0){
-							block2.setType(Material.FIRE);
+				b2 = c.getBlock(x, y, z);
+				if(b2.getTypeId()!=0){
+					if(b2.getType()==Material.LEAVES){
+						b2 = c.getBlock(x, y+1, z);
+						if(b2.getTypeId()==0){
+							b2.setType(Material.FIRE);
 						}
 						count=0;
 					}else{
@@ -60,11 +54,10 @@ public class Util {
 					
 				}else{
 					count=0;
-					block2.setTypeId(0);
-					loc3.setY(y+1);
-					block2 = p.getWorld().getBlockAt(loc3);
-					if((!(block2.getTypeId()==0))&&(block2.getType()!=Material.BEDROCK)){
-						block2.setTypeId(0);
+					b2.setTypeId(0);
+					b2 = c.getBlock(x, y+1, z);
+					if(b2.getType()!=Material.BEDROCK){
+						b2.setTypeId(0);
 					}
 				}
 			}else{
@@ -329,5 +322,72 @@ public class Util {
 		}
 	}
 
+	public boolean burnChunk(Chunk chunk){
+		Block b3;
+		
+		for(int ix = 0; ix<3; ix+=1){
+			for(int x = 0; x<16; x+=1){
+				for(int z = 0; z<16; z+=1){
+					
+					double y = getGround(x, z, chunk);
+					for(double cy = y; (y-cy) < sunburn.config.cd; cy-=1){
+						b3 = chunk.getBlock(x,  (int) cy,  z);
+						
+						if(cy>0){
+							if(b3.getType()==Material.BEDROCK){
+								continue;
+							}
+
+							double rand = 0;
+
+							if(b3.getType() == Material.GRASS){
+								b3.setType(Material.DIRT);
+							}else if((b3.getType() == Material.WATER)||(b3.getType() == Material.STATIONARY_WATER)){
+								b3.setType(Material.AIR);
+							}else if(b3.getType() == Material.STONE){
+								b3.setType(Material.SANDSTONE);
+							}else if(b3.getType() == Material.DIRT){
+								rand = Math.random()*100;
+								rand = (int) rand;
+								if(rand%4 == 0){
+									b3.setType(Material.SAND);
+								}
+							}else if((b3.getType()==Material.CACTUS)||
+									(b3.getType()==Material.CROPS)||
+									(b3.getType()==Material.DEAD_BUSH)||
+									(b3.getType()==Material.BOOKSHELF)||
+									(b3.getType()==Material.FENCE)||(b3.getType()==Material.ICE)||
+									(b3.getType()==Material.FENCE_GATE)||
+									(b3.getType()==Material.GRASS)||(b3.getType()==Material.SNOW)||
+									(b3.getType()==Material.HUGE_MUSHROOM_1)||
+									(b3.getType()==Material.HUGE_MUSHROOM_2)||
+									(b3.getType()==Material.LONG_GRASS)||
+									(b3.getType()==Material.MELON_BLOCK)||
+									(b3.getType()==Material.MYCEL)||(b3.getType()==Material.PUMPKIN)||
+									(b3.getType()==Material.RED_MUSHROOM)||(b3.getType()==Material.RED_ROSE)||
+									(b3.getType()==Material.SAPLING)||(b3.getType()==Material.TNT)||
+									(b3.getType()==Material.VINE)||
+									(b3.getType()==Material.WOOD_DOOR)||(b3.getType()==Material.WOOD_STAIRS)||
+									(b3.getType()==Material.WOODEN_DOOR)||(b3.getType()==Material.WOOL)||
+									(b3.getType()==Material.WORKBENCH)||(b3.getType()==Material.YELLOW_FLOWER)){
+
+								b3.setType(Material.AIR);
+
+							}else if((b3.getType()==Material.LEAVES)||
+									(b3.getType()==Material.WOOD)||
+									(b3.getType()==Material.LOG)){
+								b3 = chunk.getBlock(x,  (int) cy+1,  z);
+								if(b3.getType()==Material.AIR){
+									b3.setType(Material.FIRE);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 }
 
