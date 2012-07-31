@@ -1,5 +1,7 @@
 package com.github.vsams14;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -20,6 +22,7 @@ public class Util {
 	float hd, cd, ld, bd;
 	String armtype;
 	private SunBurn sunburn;
+	Map<World, Map<Chunk, Boolean>> worldChunks = new HashMap<World, Map<Chunk, Boolean>>();
 
 
 	public Util(SunBurn sunburn){
@@ -322,7 +325,7 @@ public class Util {
 		}
 	}
 
-	public boolean burnChunk(Chunk chunk){
+	public void burnChunk(Chunk chunk){
 		Block b3;
 		
 		for(int ix = 0; ix<3; ix+=1){
@@ -386,7 +389,55 @@ public class Util {
 				}
 			}
 		}
-		return true;
+	}
+
+	public void initializeMap(){
+		for(World w : sunburn.getServer().getWorlds()){
+			Map<Chunk, Boolean> burnedChunks = new HashMap<Chunk, Boolean>();
+			worldChunks.put(w, burnedChunks);
+		}
+	}
+	
+	public void getAutoBurnedChunks(){
+		for(World w : sunburn.getServer().getWorlds()){
+			if((w.getName().contains("nether"))||(w.getName().contains("the_end"))){
+				continue;
+			}
+			for(Chunk c : w.getLoadedChunks()){
+				Map<Chunk, Boolean> burnedChunks = worldChunks.get(w);
+				if(c!=null){
+					if(!(burnedChunks.containsKey(c))){
+						burnedChunks.put(c, false);
+						worldChunks.put(w, burnedChunks);
+					}
+				}
+			}
+		}
+	}
+	
+	public void wasteOneChunk(){
+		for(World w : sunburn.getServer().getWorlds()){
+			if((w.getName().contains("nether"))||(w.getName().contains("the_end"))){
+				continue;
+			}
+			Map<Chunk, Boolean> burnedChunks = worldChunks.get(w);
+			for(Chunk c : w.getLoadedChunks()){
+				if(burnedChunks.containsKey(c)){
+					if(burnedChunks.get(c)){
+						continue;
+					}else{
+						burnedChunks.put(c,  true);
+						burnChunk(c);
+						if(sunburn.config.notify){
+							sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burning Chunk: "+c.getX()+", "+c.getZ()+" in World:"+w.getName());	
+						}
+						break;
+					}
+				}
+			}
+						
+			worldChunks.put(w,  burnedChunks);
+		}
 	}
 	
 }

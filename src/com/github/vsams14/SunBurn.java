@@ -31,6 +31,8 @@ public class SunBurn extends JavaPlugin {
 		config.reConf();
 		util.loadArmor();
 		config.genConf();
+		util.initializeMap();
+		config.loadChunks();
 		
 		update.readRSS();
 		
@@ -42,20 +44,22 @@ public class SunBurn extends JavaPlugin {
 		    // Failed to submit the data :-(
 		}
 
-		if((!config.bPlayer) && (!config.bAnimal)){
-			config.disabled = true;
-		}
-
+		//Player-burn + usmite, 1/2 Second
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
 			public void run() {
 				burn.BurnMain();
 				burn.usmite();
+				if(config.autoburn){
+					util.getAutoBurnedChunks();
+					util.wasteOneChunk();
+				}
 			}
 
 		}
 		, 0L , 10L);
 
+		//Updates, 15 Minutes
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
 			public void run() {
@@ -107,6 +111,7 @@ public class SunBurn extends JavaPlugin {
 		}
 		, 0L , 18000L);
 
+		//Auto-off, 1 second
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
 			public void run() {					
@@ -124,6 +129,7 @@ public class SunBurn extends JavaPlugin {
 		}
 		, 0L , 20L);
 
+		//Armor damage, 8 seconds
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
 			public void run() {					
@@ -148,6 +154,7 @@ public class SunBurn extends JavaPlugin {
 	public void onDisable(){
 		if(!update.off){
 			log.info("Saving Configuration...");
+			config.saveChunks();
 			config.reConf();
 			WorldTime[] wtime = config.wtime;
 			for(int x = 0; x < wtime.length; x++){

@@ -1,9 +1,11 @@
 package com.github.vsams14;
 
 import java.io.File;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -27,13 +29,13 @@ public class Commands {
 					if((sendee.hasPermission("sunburn.toggle"))||(sendee.isOp())){
 						if(sunburn.config.disabled){
 							sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Enabled");
-							sunburn.config.bPlayer = true;
-							sunburn.config.bAnimal = true;
+							sunburn.config.loadConf();
 							sunburn.config.disabled = false;
 						}else{
 							sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Disabled");
 							sunburn.config.bPlayer = false;
 							sunburn.config.bAnimal = false;
+							sunburn.config.autoburn = false;
 							sunburn.config.disabled = true;
 						}
 						return true;
@@ -93,7 +95,7 @@ public class Commands {
 								}
 							}
 							return false;
-							
+
 						}else if(args[0].equalsIgnoreCase("armor")){
 							if((sendee.hasPermission("sunburn.toggle.armor"))||(sendee.isOp())){
 								if(sunburn.config.armor){
@@ -112,7 +114,7 @@ public class Commands {
 								return true;
 							}
 							return false;
-							
+
 						}else if(args[0].equalsIgnoreCase("world")){
 							if((sendee.hasPermission("sunburn.toggle"))||(sendee.isOp())){
 								World w = sendee.getWorld();
@@ -131,16 +133,32 @@ public class Commands {
 								return true;
 							}
 							return false;
-							
+
 						}else if(args[0].equalsIgnoreCase("chunk")){
 							if((sendee.hasPermission("sunburn.waste"))||(sendee.isOp())){
-								sendee.sendMessage("[\u00A74Sunburn\u00A7f] Starting...");
-								
-								Chunk chunk = sendee.getLocation().getChunk();
-								if(sunburn.util.burnChunk(chunk)){
-									sendee.sendMessage("[\u00A74Sunburn\u00A7f] Done!");
-									return true;
+								Location loc = sendee.getLocation();
+								Map<Chunk, Boolean> burnedChunks = sunburn.util.worldChunks.get(sendee.getWorld());
+								Chunk c = loc.getChunk();
+								burnedChunks.put(c, false);
+								if(sunburn.config.notify){
+									sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burning Chunk: "+c.getX()+", "+c.getZ()+" in World:"+sendee.getWorld().getName());	
 								}
+
+								return true;
+
+							}
+							return false;
+						}else if(args[0].equalsIgnoreCase("waste")){
+							if((sendee.hasPermission("sunburn.waste"))||(sendee.isOp())){
+								if(sunburn.config.autoburn){
+									sunburn.config.autoburn = false;
+									sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Automatic Wasteland Generation turned off!");
+								}else{
+									sunburn.config.autoburn = true;
+									sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Automatic Wasteland Generation turned on!");
+								}								
+								return true;
+
 							}
 							return false;
 						}
@@ -232,16 +250,16 @@ public class Commands {
 				case 0:
 					if(sunburn.config.disabled){
 						sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Enabled");
-						sunburn.config.bPlayer = true;
-						sunburn.config.bAnimal = true;
+						sunburn.config.loadConf();
 						sunburn.config.disabled = false;
 					}else{
 						sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Disabled");
 						sunburn.config.bPlayer = false;
 						sunburn.config.bAnimal = false;
+						sunburn.config.autoburn = false;
 						sunburn.config.disabled = true;
 					}
-					break;
+					return true;
 
 				case 1:
 					Player target = Bukkit.getServer().getPlayer(args[0]);
@@ -279,7 +297,17 @@ public class Commands {
 								sunburn.config.saveConf(sunburn.config.conf, p);
 							}
 							return true;
+						}else if(args[0].equalsIgnoreCase("waste")){
+							if(sunburn.config.autoburn){
+								sunburn.config.autoburn = false;
+								sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Automatic Wasteland Generation turned off!");
+							}else{
+								sunburn.config.autoburn = true;
+								sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Automatic Wasteland Generation turned on!");
+							}								
+							return true;
 						}
+						
 						return false;
 					}else{
 						if(sunburn.config.pwl.contains(args[0])){
