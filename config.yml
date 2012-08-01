@@ -25,4 +25,5 @@ Armor_Type: CHAIN
 Durability: 5
 Armor_On: true
 worlds:
+wasteland_worlds:
 exclude_players:

@@ -400,15 +400,14 @@ public class Util {
 	
 	public void getAutoBurnedChunks(){
 		for(World w : sunburn.getServer().getWorlds()){
-			if((w.getName().contains("nether"))||(w.getName().contains("the_end"))){
-				continue;
-			}
-			for(Chunk c : w.getLoadedChunks()){
-				Map<Chunk, Boolean> burnedChunks = worldChunks.get(w);
-				if(c!=null){
-					if(!(burnedChunks.containsKey(c))){
-						burnedChunks.put(c, false);
-						worldChunks.put(w, burnedChunks);
+			if(sunburn.config.wasteworlds.contains(w.getName())){
+				for(Chunk c : w.getLoadedChunks()){
+					Map<Chunk, Boolean> burnedChunks = worldChunks.get(w);
+					if(c!=null){
+						if(!(burnedChunks.containsKey(c))){
+							burnedChunks.put(c, false);
+							worldChunks.put(w, burnedChunks);
+						}
 					}
 				}
 			}
@@ -417,26 +416,24 @@ public class Util {
 	
 	public void wasteOneChunk(){
 		for(World w : sunburn.getServer().getWorlds()){
-			if((w.getName().contains("nether"))||(w.getName().contains("the_end"))){
-				continue;
-			}
-			Map<Chunk, Boolean> burnedChunks = worldChunks.get(w);
-			for(Chunk c : w.getLoadedChunks()){
-				if(burnedChunks.containsKey(c)){
-					if(burnedChunks.get(c)){
-						continue;
-					}else{
-						burnedChunks.put(c,  true);
-						burnChunk(c);
-						if(sunburn.config.notify){
-							sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burning Chunk: "+c.getX()+", "+c.getZ()+" in World:"+w.getName());	
+			if(sunburn.config.wasteworlds.contains(w.getName())){
+				Map<Chunk, Boolean> burnedChunks = worldChunks.get(w);
+				for(Chunk c : w.getLoadedChunks()){
+					if(burnedChunks.containsKey(c)){
+						if(burnedChunks.get(c)){
+							continue;
+						}else{
+							burnedChunks.put(c,  true);
+							burnChunk(c);
+							if(sunburn.config.notify){
+								sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burning Chunk: "+c.getX()+", "+c.getZ()+" in World:"+w.getName());	
+							}
+							break;
 						}
-						break;
 					}
 				}
+				worldChunks.put(w,  burnedChunks);
 			}
-						
-			worldChunks.put(w,  burnedChunks);
 		}
 	}
 	

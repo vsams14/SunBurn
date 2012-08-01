@@ -8,7 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -22,14 +22,14 @@ import org.bukkit.entity.Player;
 
 public class Config{
 
-	boolean bPlayer, bAnimal, disabled, armor = true, autoburn, notify;
+	boolean bPlayer = true, bAnimal = true, disabled = false, armor = true, autoburn = false, notify = true;
 	int pb, cd = 5;
-	List<String> worlds;
+	List<String> worlds, wasteworlds;
 	List<String> pwl;
-	List<String> pwr = new ArrayList<String>();
 	YamlConfiguration worldConfig = new YamlConfiguration();
 	YamlConfiguration conf = new YamlConfiguration();
 	WorldTime[] wtime;
+	Map<String, Integer> wMap = new HashMap<String, Integer>();
 	private SunBurn sunburn;
 
 	public Config(SunBurn sunburn){
@@ -65,9 +65,7 @@ public class Config{
 		cd = conf.getInt("chunk_depth");
 		autoburn = conf.getBoolean("auto_waste");
 		notify = conf.getBoolean("notify_waste");
-		if((!bPlayer) && (!bAnimal)){
-			disabled = true;
-		}
+		wasteworlds = conf.getStringList("wasteland_worlds");
 	}
 
 	public void addExceptions(){
@@ -126,6 +124,7 @@ public class Config{
 		worldConfig.set("Durability", sunburn.util.durability);
 		worldConfig.set("Armor_On", armor);
 		worldConfig.set("worlds", worlds);
+		worldConfig.set("wasteland_worlds", wasteworlds);
 		worldConfig.set("exclude_players", pwl);
 		saveConf(worldConfig, f);
 
@@ -157,6 +156,8 @@ public class Config{
 			File f = new File(sunburn.getDataFolder(), world.getName()+".yml");
 			loadcConf(f, sunburn.getResource("World.yml"));
 			worldConfig.set("WorldName", world.getName());
+			wMap.clear();
+			wMap.put(world.getName(), i);
 
 			wtime[i].name = worldConfig.getString("WorldName");
 			wtime[i].locked = worldConfig.getBoolean("locked");

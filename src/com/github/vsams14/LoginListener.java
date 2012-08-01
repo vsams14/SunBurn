@@ -18,7 +18,7 @@ public class LoginListener implements Listener {
 	public void Login(PlayerLoginEvent event){
 		Player player = event.getPlayer();
 		if(player.hasPermission("sunburn.protect")){
-			if((!sunburn.config.pwl.contains(player.getName()))&&(!sunburn.config.pwr.contains(player.getName()))){
+			if(!sunburn.config.pwl.contains(player.getName())){
 				sunburn.config.pwl.add(player.getName());
 			}
 		}
