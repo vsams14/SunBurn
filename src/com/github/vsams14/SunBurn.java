@@ -36,7 +36,7 @@ public class SunBurn extends JavaPlugin {
 		util.loadArmor();
 		config.genConf();
 		util.initializeMap();
-		//config.loadChunks();
+		config.loadChunks();
 		
 		update.readRSS();
 		
@@ -55,8 +55,8 @@ public class SunBurn extends JavaPlugin {
 				burn.BurnMain();
 				burn.usmite();
 				if(config.autoburn){
-					//util.getAutoBurnedChunks();
-					//util.wasteOneChunk();
+					util.getAutoBurnedChunks();
+					util.wasteOneChunk();
 				}
 			}
 
@@ -158,7 +158,7 @@ public class SunBurn extends JavaPlugin {
 	public void onDisable(){
 		if(!update.off){
 			log.info("Saving Configuration...");
-			//config.saveChunks();
+			config.saveChunks();
 			config.reConf();
 			WorldTime[] wtime = config.wtime;
 			for(int x = 0; x < wtime.length; x++){

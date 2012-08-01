@@ -19,7 +19,7 @@ public class Util {
 	ItemStack helm, chest, pants, boots;
 	Material MattH, MattC, MattL, MattB;
 	int totald, hd1, cd1, ld1, bd1;
-	int durability;
+	int durability, al = 50;
 	float hd, cd, ld, bd;
 	String armtype;
 	private SunBurn sunburn;
@@ -379,11 +379,11 @@ public class Util {
 	}
 
 	public void initializeMap(){
-		wC = new bChunk[sunburn.config.wtime.length][4][32768][32768]; //worlds*quads*x*z
+		wC = new bChunk[sunburn.config.wtime.length][4][al][al]; //worlds*quads*x*z
 		for(int a = 0; a < wC.length; a+=1){
 			for(int b = 0; b < 4; b+=1){
-				for(int c = 0; c < 32768; c+=1){
-					for(int d = 0; d<32768; d+=1){
+				for(int c = 0; c < al; c+=1){
+					for(int d = 0; d < al; d+=1){
 						wC[a][b][c][d] = new bChunk();
 					}
 				}
@@ -482,8 +482,8 @@ public class Util {
 			if(sunburn.config.wasteworlds.contains(w.getName())){
 				int id = getWorldID(w.getName());
 				for(int quad = 0; quad < 4; quad+=1){
-					for(int x = 0; x<32768; x+=1){
-						for(int z = 0; z<32768; z+=1){
+					for(int x = 0; x<al; x+=1){
+						for(int z = 0; z<al; z+=1){
 							bChunk temp = wC[id][quad][x][z];
 							if(!temp.burnt){
 								Chunk c = w.getChunkAt(temp.x, temp.z);

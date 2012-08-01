@@ -236,8 +236,8 @@ public class Config{
 				String s;
 				int id = sunburn.util.getWorldID(w.getName());
 				for(int quad = 0; quad < 4; quad+=1){
-					for(int x = 0; x<32768; x+=1){
-						for(int z = 0; z<32768; z+=1){
+					for(int x = 0; x<sunburn.util.al; x+=1){
+						for(int z = 0; z<sunburn.util.al; z+=1){
 							bChunk temp = sunburn.util.wC[id][quad][x][z];
 							if(temp.activated){
 								s = temp.x+","+temp.z+":"+temp.burnt+":"+quad+","+x+","+z+"\r\n";
