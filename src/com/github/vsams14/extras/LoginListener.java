@@ -1,9 +1,11 @@
-package com.github.vsams14;
+package com.github.vsams14.extras;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerLoginEvent;
+
+import com.github.vsams14.SunBurn;
 
 public class LoginListener implements Listener {
 

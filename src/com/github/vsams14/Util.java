@@ -1,7 +1,5 @@
 package com.github.vsams14;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -13,6 +11,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
 
+import com.github.vsams14.extras.WorldTime;
+import com.github.vsams14.extras.bChunk;
+
 public class Util {
 
 	ItemStack helm, chest, pants, boots;
@@ -22,7 +23,7 @@ public class Util {
 	float hd, cd, ld, bd;
 	String armtype;
 	private SunBurn sunburn;
-	Map<World, Map<Chunk, Boolean>> worldChunks = new HashMap<World, Map<Chunk, Boolean>>();
+	bChunk[][][][] wC;
 
 
 	public Util(SunBurn sunburn){
@@ -68,20 +69,6 @@ public class Util {
 			}
 		}
 		return (y+count);
-	}
-
-	public int getQuad(double x, double z){
-		int quad = 1;
-		if((x>=0)&&(z>=0)){
-			quad = 1;
-		}else if((x<0)&&(z>=0)){
-			quad = 2;
-		}else if((x<0)&&(z<0)){
-			quad = 3;
-		}else{
-			quad = 4;
-		}
-		return quad;
 	}
 
 	public void getArmor(Player e) {
@@ -392,47 +379,122 @@ public class Util {
 	}
 
 	public void initializeMap(){
-		for(World w : sunburn.getServer().getWorlds()){
-			Map<Chunk, Boolean> burnedChunks = new HashMap<Chunk, Boolean>();
-			worldChunks.put(w, burnedChunks);
-		}
-	}
-	
-	public void getAutoBurnedChunks(){
-		for(World w : sunburn.getServer().getWorlds()){
-			if(sunburn.config.wasteworlds.contains(w.getName())){
-				for(Chunk c : w.getLoadedChunks()){
-					Map<Chunk, Boolean> burnedChunks = worldChunks.get(w);
-					if(c!=null){
-						if(!(burnedChunks.containsKey(c))){
-							burnedChunks.put(c, false);
-							worldChunks.put(w, burnedChunks);
-						}
+		wC = new bChunk[sunburn.config.wtime.length][4][32768][32768]; //worlds*quads*x*z
+		for(int a = 0; a < wC.length; a+=1){
+			for(int b = 0; b < 4; b+=1){
+				for(int c = 0; c < 32768; c+=1){
+					for(int d = 0; d<32768; d+=1){
+						wC[a][b][c][d] = new bChunk();
 					}
 				}
 			}
 		}
 	}
 	
-	public void wasteOneChunk(){
+	public void getAutoBurnedChunks(){
 		for(World w : sunburn.getServer().getWorlds()){
 			if(sunburn.config.wasteworlds.contains(w.getName())){
-				Map<Chunk, Boolean> burnedChunks = worldChunks.get(w);
+				int id = getWorldID(w.getName());
+				int quad, x, z;
 				for(Chunk c : w.getLoadedChunks()){
-					if(burnedChunks.containsKey(c)){
-						if(burnedChunks.get(c)){
-							continue;
-						}else{
-							burnedChunks.put(c,  true);
-							burnChunk(c);
-							if(sunburn.config.notify){
-								sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burning Chunk: "+c.getX()+", "+c.getZ()+" in World:"+w.getName());	
+					quad = getQuadrant(c.getX(), c.getZ());
+					x = getXQ(c.getX(), quad);
+					z = getZQ(c.getZ(), quad);
+					bChunk temp = wC[id][quad][x][z];
+					if(!temp.activated){
+						temp.activated = true;
+						temp.burnt = false;
+						temp.x = c.getX();
+						temp.z = c.getZ();
+						temp.x2 = x;
+						temp.z2 = z;
+						temp.quad = quad;
+						temp.world = w.getName();
+						wC[id][quad][x][z] = temp;
+					}else{
+						continue;
+					}
+				}				
+			}
+		}
+	}
+	
+	public int getWorldID(String s){
+		for(int x = 0; x<sunburn.config.wtime.length; x+=1){
+			if(sunburn.config.wtime[x].name.equalsIgnoreCase(s)){
+				return x;
+			}
+		}
+		return -1;
+	}
+	
+	public int getQuadrant(int x, int z){ //1|0
+		if((x<0)&&(z<0)){                 //2|3
+			return 2;
+		}else if((x<0)&&(z>=0)){
+			return 1;
+		}else if((x>=0)&&(z<0)){
+			return 3;
+		}else if((x>=0)&&(z>=0)){
+			return 0;
+		}else{
+			return -1;
+		}
+	}
+	
+	public int getXQ(int x, int quad){
+		switch(quad){
+		case 0:
+			return x;
+			
+		case 1:
+			return (x*-1);
+			
+		case 2:
+			return (x*-1);
+			
+		case 3:
+			return x;
+		}
+		return x;
+	}
+	
+	public int getZQ(int z, int quad){
+		switch(quad){
+		case 0:
+			return z;
+			
+		case 1:
+			return z;
+			
+		case 2:
+			return (z*-1);
+			
+		case 3:
+			return (z*-1);
+		}
+		return z;
+	}
+	
+	public void wasteOneChunk(){
+		for(World w : sunburn.getServer().getWorlds()){
+			inner:
+			if(sunburn.config.wasteworlds.contains(w.getName())){
+				int id = getWorldID(w.getName());
+				for(int quad = 0; quad < 4; quad+=1){
+					for(int x = 0; x<32768; x+=1){
+						for(int z = 0; z<32768; z+=1){
+							bChunk temp = wC[id][quad][x][z];
+							if(!temp.burnt){
+								Chunk c = w.getChunkAt(temp.x, temp.z);
+								burnChunk(c);
+								temp.burnt = true;
+								wC[id][quad][x][z] = temp;
+								break inner;
 							}
-							break;
 						}
 					}
 				}
-				worldChunks.put(w,  burnedChunks);
 			}
 		}
 	}

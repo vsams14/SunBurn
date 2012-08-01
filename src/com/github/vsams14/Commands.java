@@ -1,7 +1,6 @@
 package com.github.vsams14;
 
 import java.io.File;
-import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -10,6 +9,8 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.github.vsams14.extras.bChunk;
 
 public class Commands {
 
@@ -173,6 +174,9 @@ public class Commands {
 						}else if(args[0].equalsIgnoreCase("world")){
 							toggleWwaste(sendee.getWorld().getName());
 							return true;
+						}else if(args[0].equalsIgnoreCase("notify")){
+							toggleNotify();
+							return true;
 						}
 						return false;
 						
@@ -190,6 +194,13 @@ public class Commands {
 				case 0:
 					toggleAWaste();
 					return true;
+					
+				case 1:
+					if(args[0].equalsIgnoreCase("notify")){
+						toggleNotify();
+						return true;
+					}
+					return false;
 					
 				case 2:
 					if(args[0].equalsIgnoreCase("world")){
@@ -345,14 +356,38 @@ public class Commands {
 
 	public void burnChunkAtPlayer(Player p){
 		Location loc = p.getLocation();
-		Map<Chunk, Boolean> burnedChunks = sunburn.util.worldChunks.get(p.getWorld());
 		Chunk c = loc.getChunk();
 		sunburn.util.burnChunk(c);
-		burnedChunks.put(c, true);
-		sunburn.util.worldChunks.put(p.getWorld(), burnedChunks);
+		int id = sunburn.util.getWorldID(p.getWorld().getName());
+		int quad = sunburn.util.getQuadrant(c.getX(), c.getZ());
+		int x = sunburn.util.getXQ(c.getX(), quad);
+		int z = sunburn.util.getZQ(c.getZ(), quad);
+		bChunk temp = sunburn.util.wC[id][quad][x][z];
+		temp.activated = true;
+		temp.burnt = true;
+		temp.quad = quad;
+		temp.world = p.getWorld().getName();
+		temp.x = c.getX();
+		temp.z = c.getZ();
+		temp.x2 = x;
+		temp.z2 = z;
+		sunburn.util.wC[id][quad][x][z] = temp;
 		if(sunburn.config.notify){
 			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burning Chunk: "+c.getX()+", "+c.getZ()+" in World:"+p.getWorld().getName());	
 		}
 	}
 
+	public void toggleNotify(){
+		if(sunburn.config.notify){
+			sunburn.config.notify = false;
+			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Will stop notifying about wasteland generation!");
+		}else{
+			sunburn.config.notify = true;
+			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Will notify about wasteland generation!");
+		}
+		sunburn.config.conf.set("notify_waste", sunburn.config.notify);
+		File p = new File(sunburn.getDataFolder(), "config.yml");
+		sunburn.config.saveConf(sunburn.config.conf, p);
+		sunburn.config.loadConf();
+	}
 }

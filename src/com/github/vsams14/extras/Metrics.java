@@ -26,13 +26,15 @@
  * either expressed or implied, of anybody else.
  */
 
-package com.github.vsams14;
+package com.github.vsams14.extras;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
+
+import com.github.vsams14.SunBurn;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -11,15 +11,19 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.github.vsams14.extras.LoginListener;
+import com.github.vsams14.extras.Metrics;
+import com.github.vsams14.extras.WorldTime;
+
 public class SunBurn extends JavaPlugin {
 
-	Logger log;	
+	public Logger log;	
 
-	Util util = new Util(this);
-	Commands com = new Commands(this);
-	Burn burn = new Burn(this);
-	Config config = new Config(this);
-	Update update = new Update(this);
+	public Util util = new Util(this);
+	public Commands com = new Commands(this);
+	public Burn burn = new Burn(this);
+	public Config config = new Config(this);
+	public Update update = new Update(this);
 	int timer = 15;
 	int runs = 0;
 
@@ -32,7 +36,7 @@ public class SunBurn extends JavaPlugin {
 		util.loadArmor();
 		config.genConf();
 		util.initializeMap();
-		config.loadChunks();
+		//config.loadChunks();
 		
 		update.readRSS();
 		
@@ -51,8 +55,8 @@ public class SunBurn extends JavaPlugin {
 				burn.BurnMain();
 				burn.usmite();
 				if(config.autoburn){
-					util.getAutoBurnedChunks();
-					util.wasteOneChunk();
+					//util.getAutoBurnedChunks();
+					//util.wasteOneChunk();
 				}
 			}
 
@@ -154,7 +158,7 @@ public class SunBurn extends JavaPlugin {
 	public void onDisable(){
 		if(!update.off){
 			log.info("Saving Configuration...");
-			config.saveChunks();
+			//config.saveChunks();
 			config.reConf();
 			WorldTime[] wtime = config.wtime;
 			for(int x = 0; x < wtime.length; x++){
