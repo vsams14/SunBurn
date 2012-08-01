@@ -48,7 +48,7 @@ public class SunBurn extends JavaPlugin {
 		    // Failed to submit the data :-(
 		}
 
-		//Player-burn + usmite, 1/2 Second
+		//Player-burn + usmite, 1/2 Second, 1 second delay
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
 			public void run() {
@@ -61,7 +61,7 @@ public class SunBurn extends JavaPlugin {
 			}
 
 		}
-		, 0L , 10L);
+		, 20L , 10L);
 
 		//Updates, 15 Minutes
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
@@ -157,7 +157,7 @@ public class SunBurn extends JavaPlugin {
 
 	public void onDisable(){
 		if(!update.off){
-			log.info("Saving Configuration...");
+			//log.info("Saving Configuration...");
 			config.saveChunks();
 			config.reConf();
 			WorldTime[] wtime = config.wtime;

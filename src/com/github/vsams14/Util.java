@@ -19,7 +19,7 @@ public class Util {
 	ItemStack helm, chest, pants, boots;
 	Material MattH, MattC, MattL, MattB;
 	int totald, hd1, cd1, ld1, bd1;
-	int durability, al = 50;
+	int durability, al = 1000;
 	float hd, cd, ld, bd;
 	String armtype;
 	private SunBurn sunburn;
@@ -411,6 +411,7 @@ public class Util {
 						temp.quad = quad;
 						temp.world = w.getName();
 						wC[id][quad][x][z] = temp;
+						//sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Activated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+w.getName());
 					}else{
 						continue;
 					}
@@ -485,12 +486,17 @@ public class Util {
 					for(int x = 0; x<al; x+=1){
 						for(int z = 0; z<al; z+=1){
 							bChunk temp = wC[id][quad][x][z];
-							if(!temp.burnt){
-								Chunk c = w.getChunkAt(temp.x, temp.z);
-								burnChunk(c);
-								temp.burnt = true;
-								wC[id][quad][x][z] = temp;
-								break inner;
+							if(temp.activated){
+								if(!temp.burnt){
+									Chunk c = w.getChunkAt(temp.x, temp.z);
+									burnChunk(c);
+									if(sunburn.config.notify){
+										sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burned Chunk at ("+temp.x+", "+temp.z+") in world: "+w.getName());
+									}
+									temp.burnt = true;
+									wC[id][quad][x][z] = temp;
+									break inner;
+								}
 							}
 						}
 					}

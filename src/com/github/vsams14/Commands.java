@@ -306,6 +306,10 @@ public class Commands {
 			sunburn.config.autoburn = true;
 			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Automatic Wasteland Generation turned on!");
 		}
+		sunburn.config.conf.set("auto_waste", sunburn.config.autoburn);
+		File p = new File(sunburn.getDataFolder(), "config.yml");
+		sunburn.config.saveConf(sunburn.config.conf, p);
+		sunburn.config.loadConf();
 	}
 
 	public void togglePException(Player target, String s){
@@ -373,7 +377,7 @@ public class Commands {
 		temp.z2 = z;
 		sunburn.util.wC[id][quad][x][z] = temp;
 		if(sunburn.config.notify){
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burning Chunk: "+c.getX()+", "+c.getZ()+" in World:"+p.getWorld().getName());	
+			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burned Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
 		}
 	}
 
