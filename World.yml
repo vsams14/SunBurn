@@ -1,12 +1,5 @@
-# Time Control:
-# Standard Dawn - 1800
-# Standard Day - 12000
-# Standard Dusk - 1800
-# Standard Night - 8400
-# -----------------
-# Don't mess with locktime
-# or wdur if you don't
-# know what you are doing!
+# For help with this configuration, please see:
+# http://dev.bukkit.org/server-mods/sunburn-reborn/pages/config/#w-world-config
 
 WorldName: World
 locked: false

@@ -35,7 +35,6 @@ public class SunBurn extends JavaPlugin {
 		config.reConf();
 		util.loadArmor();
 		config.genConf();
-		util.initializeMap();
 		config.loadChunks();
 		
 		update.readRSS();

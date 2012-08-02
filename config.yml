@@ -1,18 +1,5 @@
-# Damage per burn:
-# 1 = 1/2 hearts
-# These values are EXTRA damage. 
-# Normal fire damage (1/2 hearts) will still be dealt.
-# -----------------
-# chunk_depth controls wasteland generation.
-# a larger depth means more blocks will be affected.
-# this also means it will take more time to generate,
-# and your server may crash. > 15 is NOT recommended!
-# auto_waste turns on automatic wasteland
-# notify_waste will broadcast a message for every changed chunk.
-# -----------------
-# Armors:
-# types: leather, iron, gold, chain, diamond
-# durability is 1-5 (whole numbers)
+# For help with this configuration, please see:
+# http://dev.bukkit.org/server-mods/sunburn-reborn/pages/config/#w-main
 
 version: 1.7.4
 burn_damage: 0

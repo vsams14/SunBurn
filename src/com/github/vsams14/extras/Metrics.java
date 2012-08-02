@@ -67,7 +67,7 @@ public class Metrics {
 	private final Plugin plugin;
 	private SunBurn sunburn;
 	private Map<Plugin, Set<Graph>> graphs = Collections.synchronizedMap(new HashMap<Plugin, Set<Graph>>());
-	private Graph customGraph;
+	private Graph burnGraph, wasteGraph;
 	private final YamlConfiguration configuration;
 	private final File configurationFile;
 	private final String guid;
@@ -433,11 +433,12 @@ public class Metrics {
 
 	public void findCustomData(SunBurn sunburn){
 		this.sunburn = sunburn;
-		customGraph = createGraph(sunburn, Metrics.Graph.Type.Line, "Burning");
+		burnGraph = createGraph(sunburn, Metrics.Graph.Type.Line, "Burning");
+		wasteGraph = createGraph(sunburn, Metrics.Graph.Type.Line, "Wasteland Worlds");
 	}
 
 	public void addCustomData(){
-		String burning;
+		String burning, waste;
 
 		boolean bp = sunburn.config.bPlayer;
 		boolean ba = sunburn.config.bAnimal;
@@ -451,8 +452,18 @@ public class Metrics {
 		}else{
 			burning = "All Off";
 		}
-		sunburn.log.info("Sending: "+burning);
-		customGraph.addPlotter(new Plotter(burning){
+		
+		if(sunburn.config.autoburn){
+			waste = sunburn.config.wasteworlds.size()+" Worlds";
+		}else{
+			waste = "0 Worlds";
+		}
+		burnGraph.addPlotter(new Plotter(burning){
+			public int getValue(){
+				return 1;
+			}
+		});
+		wasteGraph.addPlotter(new Plotter(waste){
 			public int getValue(){
 				return 1;
 			}

@@ -6,7 +6,7 @@ authors: [vsams14, jkubs15]
 commands:
    burn:
       description: Sets a player on fire.
-      usage: Please see http://dev.bukkit.org/server-mods/sunburn-reborn/ for a list of commands and features!
+      usage: Please see http://dev.bukkit.org/server-mods/sunburn-reborn/ if you need any help!
       
    usmite:
       description: Uber Smite!
@@ -14,7 +14,7 @@ commands:
       
    waste:
       description: Wasteland Generation Controls
-      usage: Please see http://dev.bukkit.org/server-mods/sunburn-reborn/ for a list of commands and features!
+      usage: Please see http://dev.bukkit.org/server-mods/sunburn-reborn/ if you need ay help!
       
 permissions:
    sunburn.*:

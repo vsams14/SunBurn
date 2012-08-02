@@ -1,5 +1,8 @@
 package com.github.vsams14;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -12,18 +15,17 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
 
 import com.github.vsams14.extras.WorldTime;
-import com.github.vsams14.extras.bChunk;
 
 public class Util {
 
 	ItemStack helm, chest, pants, boots;
 	Material MattH, MattC, MattL, MattB;
 	int totald, hd1, cd1, ld1, bd1;
-	int durability, al = 1000;
+	int durability, al = 4096;
 	float hd, cd, ld, bd;
 	String armtype;
 	private SunBurn sunburn;
-	bChunk[][][][] wC;
+	List<String> bchunks = new ArrayList<String>();
 
 
 	public Util(SunBurn sunburn){
@@ -55,7 +57,7 @@ public class Util {
 					}else{
 						count+=1;
 					}
-					
+
 				}else{
 					count=0;
 					b2.setTypeId(0);
@@ -77,7 +79,7 @@ public class Util {
 		pants = e.getInventory().getLeggings();
 		boots = e.getInventory().getBoots();
 	}
-	
+
 	public boolean hasArmor(Player player){
 		getArmor(player);
 		if(helm != null){
@@ -191,7 +193,7 @@ public class Util {
 
 	public void run8(Player player){
 		if(sunburn.config.armor){
-			
+
 			Block b = player.getLocation().getBlock().getRelative(BlockFace.UP);
 			byte B = b.getLightFromBlocks();
 			byte T = b.getLightLevel();
@@ -314,15 +316,15 @@ public class Util {
 
 	public void burnChunk(Chunk chunk){
 		Block b3;
-		
+
 		for(int ix = 0; ix<3; ix+=1){
 			for(int x = 0; x<16; x+=1){
 				for(int z = 0; z<16; z+=1){
-					
+
 					double y = getGround(x, z, chunk);
 					for(double cy = y; (y-cy) < sunburn.config.cd; cy-=1){
 						b3 = chunk.getBlock(x,  (int) cy,  z);
-						
+
 						if(cy>0){
 							if(b3.getType()==Material.BEDROCK){
 								continue;
@@ -378,132 +380,62 @@ public class Util {
 		}
 	}
 
-	public void initializeMap(){
-		wC = new bChunk[sunburn.config.wtime.length][4][al][al]; //worlds*quads*x*z
-		for(int a = 0; a < wC.length; a+=1){
-			for(int b = 0; b < 4; b+=1){
-				for(int c = 0; c < al; c+=1){
-					for(int d = 0; d < al; d+=1){
-						wC[a][b][c][d] = new bChunk();
+	public void getAutoBurnedChunks(){
+		for(String worlds : sunburn.config.wasteworlds){
+			World w = sunburn.getServer().getWorld(worlds);
+			for(Chunk c : w.getLoadedChunks()){
+				String s = getData(c);
+				if((!bchunks.contains(s+"q"))&&(!bchunks.contains(s+"b"))&&(!bchunks.contains(s+"r"))){
+					bchunks.add(s+"q");
+					if(sunburn.config.notify){
+						sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Activated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+w.getName());
+						sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Using "+bchunks.size()+" array spaces!");
 					}
 				}
 			}
 		}
 	}
 	
-	public void getAutoBurnedChunks(){
-		for(World w : sunburn.getServer().getWorlds()){
-			if(sunburn.config.wasteworlds.contains(w.getName())){
-				int id = getWorldID(w.getName());
-				int quad, x, z;
-				for(Chunk c : w.getLoadedChunks()){
-					quad = getQuadrant(c.getX(), c.getZ());
-					x = getXQ(c.getX(), quad);
-					z = getZQ(c.getZ(), quad);
-					bChunk temp = wC[id][quad][x][z];
-					if(!temp.activated){
-						temp.activated = true;
-						temp.burnt = false;
-						temp.x = c.getX();
-						temp.z = c.getZ();
-						temp.x2 = x;
-						temp.z2 = z;
-						temp.quad = quad;
-						temp.world = w.getName();
-						wC[id][quad][x][z] = temp;
-						//sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Activated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+w.getName());
-					}else{
-						continue;
-					}
-				}				
-			}
-		}
+	public String getData(Chunk c){
+		return c.getWorld().getName()+":"+c.getX()+":"+c.getZ()+":";
 	}
-	
-	public int getWorldID(String s){
-		for(int x = 0; x<sunburn.config.wtime.length; x+=1){
-			if(sunburn.config.wtime[x].name.equalsIgnoreCase(s)){
-				return x;
-			}
-		}
-		return -1;
-	}
-	
-	public int getQuadrant(int x, int z){ //1|0
-		if((x<0)&&(z<0)){                 //2|3
-			return 2;
-		}else if((x<0)&&(z>=0)){
-			return 1;
-		}else if((x>=0)&&(z<0)){
-			return 3;
-		}else if((x>=0)&&(z>=0)){
-			return 0;
-		}else{
-			return -1;
-		}
-	}
-	
-	public int getXQ(int x, int quad){
-		switch(quad){
-		case 0:
-			return x;
-			
-		case 1:
-			return (x*-1);
-			
-		case 2:
-			return (x*-1);
-			
-		case 3:
-			return x;
-		}
-		return x;
-	}
-	
-	public int getZQ(int z, int quad){
-		switch(quad){
-		case 0:
-			return z;
-			
-		case 1:
-			return z;
-			
-		case 2:
-			return (z*-1);
-			
-		case 3:
-			return (z*-1);
-		}
-		return z;
-	}
-	
+
 	public void wasteOneChunk(){
 		for(World w : sunburn.getServer().getWorlds()){
 			inner:
 			if(sunburn.config.wasteworlds.contains(w.getName())){
-				int id = getWorldID(w.getName());
-				for(int quad = 0; quad < 4; quad+=1){
-					for(int x = 0; x<al; x+=1){
-						for(int z = 0; z<al; z+=1){
-							bChunk temp = wC[id][quad][x][z];
-							if(temp.activated){
-								if(!temp.burnt){
-									Chunk c = w.getChunkAt(temp.x, temp.z);
-									burnChunk(c);
-									if(sunburn.config.notify){
-										sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burned Chunk at ("+temp.x+", "+temp.z+") in world: "+w.getName());
-									}
-									temp.burnt = true;
-									wC[id][quad][x][z] = temp;
-									break inner;
-								}
-							}
+				for(String s : bchunks){
+					if((s.contains(":q"))&&(s.contains(w.getName()+":"))){
+						String[] p = s.split(":");
+						Chunk c = w.getChunkAt(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+						if(c.isLoaded()){
+							burnChunk(c);
+						}else{
+							c.load();
+							burnChunk(c);
+							c.unload(true);
+						}
+						bchunks.remove(s);
+						bchunks.add(p[0]+":"+p[1]+":"+p[2]+":b");
+						if(sunburn.config.notify){
+							sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burned Chunk at ("+p[1]+", "+p[2]+") in world: "+p[0]);
+						}
+						break inner;
+					}
+				}
+			}else{
+				for(String s : bchunks){
+					if((s.contains(":r"))&&(s.contains(w.getName()+":"))){
+						String[] p = s.split(":");
+						w.regenerateChunk(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+						bchunks.remove(s);
+						bchunks.add(p[0]+":"+p[1]+":"+p[2]+":q");
+						if(sunburn.config.notify){
+							sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Regenerated Chunk at ("+p[1]+", "+p[2]+") in world: "+p[0]);
 						}
 					}
 				}
 			}
 		}
 	}
-	
 }
-

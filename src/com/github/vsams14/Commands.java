@@ -10,8 +10,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.github.vsams14.extras.bChunk;
-
 public class Commands {
 
 	private SunBurn sunburn;
@@ -156,17 +154,17 @@ public class Commands {
 				}
 				return false;
 			}
-			
+
 		}else if(cmd.getName().equalsIgnoreCase("waste")){
 			if(sender instanceof Player){
 				Player sendee = (Player)sender;
 				if(sendee.hasPermission("sunburn.waste")||sendee.isOp()){
 					switch(args.length){
-					
+
 					case 0:
 						toggleAWaste();
 						return true;
-						
+
 					case 1:
 						if(args[0].equalsIgnoreCase("chunk")){
 							burnChunkAtPlayer(sendee);
@@ -179,33 +177,55 @@ public class Commands {
 							return true;
 						}
 						return false;
-						
+
 					case 2:
 						if(args[0].equalsIgnoreCase("world")){
 							toggleWwaste(args[1]);
 							return true;
+						}else if(args[0].equalsIgnoreCase("regen")){
+							if(args[1].equalsIgnoreCase("chunk")){
+								regenChunkAtPlayer(sendee);
+								return true;
+							}else{
+								World w = sunburn.getServer().getWorld(args[1]);
+								if(w==null){
+									sendee.sendMessage("[\u00A74Sunburn\u00A7f] "+args[1]+" is not a valid world. Sorry!");
+									return true;
+								}else{
+									regenWorld(w.getName());
+									return true;
+								}
+							}
 						}
 					}
 				}
 				return false;
 			}else{
 				switch(args.length){
-				
+
 				case 0:
 					toggleAWaste();
 					return true;
-					
+
 				case 1:
 					if(args[0].equalsIgnoreCase("notify")){
 						toggleNotify();
 						return true;
 					}
 					return false;
-					
+
 				case 2:
 					if(args[0].equalsIgnoreCase("world")){
 						toggleWwaste(args[1]);
 						return true;
+					}else if(args[0].equalsIgnoreCase("regen")){
+						World w = sunburn.getServer().getWorld(args[1]);
+						if(w==null){
+							return false;
+						}else{
+							regenWorld(w.getName());
+							return true;
+						}
 					}
 				}
 			}
@@ -362,23 +382,36 @@ public class Commands {
 		Location loc = p.getLocation();
 		Chunk c = loc.getChunk();
 		sunburn.util.burnChunk(c);
-		int id = sunburn.util.getWorldID(p.getWorld().getName());
-		int quad = sunburn.util.getQuadrant(c.getX(), c.getZ());
-		int x = sunburn.util.getXQ(c.getX(), quad);
-		int z = sunburn.util.getZQ(c.getZ(), quad);
-		bChunk temp = sunburn.util.wC[id][quad][x][z];
-		temp.activated = true;
-		temp.burnt = true;
-		temp.quad = quad;
-		temp.world = p.getWorld().getName();
-		temp.x = c.getX();
-		temp.z = c.getZ();
-		temp.x2 = x;
-		temp.z2 = z;
-		sunburn.util.wC[id][quad][x][z] = temp;
+		
 		if(sunburn.config.notify){
 			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burned Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
 		}
+	}
+
+	public void regenChunkAtPlayer(Player p){
+		Location loc = p.getLocation();
+		Chunk c = loc.getChunk();
+		p.getWorld().regenerateChunk(c.getX(), c.getZ());
+		
+		if(sunburn.config.notify){
+			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Regenerated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
+		}
+	}
+
+	public void regenWorld(String name){
+		if(sunburn.config.wasteworlds.contains(name)){
+			sunburn.config.wasteworlds.remove(name);
+			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] World "+name+" can no longer generate wasteland chunks!");
+		}
+		sunburn.config.conf.set("wasteland_worlds", sunburn.config.wasteworlds);
+		File p = new File(sunburn.getDataFolder(), "config.yml");
+		sunburn.config.saveConf(sunburn.config.conf, p);
+		sunburn.config.loadConf();
+		if(sunburn.config.notify){
+			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Will now regenerate all chunks in world: "+name);
+			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Do not reactivate wasteland generation for "+name+" until regen is complete");
+		}
+
 	}
 
 	public void toggleNotify(){
