@@ -1,6 +1,7 @@
 package com.github.vsams14;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -381,37 +382,81 @@ public class Commands {
 	public void burnChunkAtPlayer(Player p){
 		Location loc = p.getLocation();
 		Chunk c = loc.getChunk();
-		sunburn.util.burnChunk(c);
-		
-		if(sunburn.config.notify){
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burned Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
-		}
+		String s = sunburn.util.getData(c);
+		if((!sunburn.util.bchunks.contains(s+"q"))&&(!sunburn.util.bchunks.contains(s+"b"))&&(!sunburn.util.bchunks.contains(s+"r"))){
+			sunburn.util.burnChunk(c);
+			sunburn.util.bchunks.add(s+"b");
+			if(sunburn.config.notify){
+				sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burned Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
+			}
+		}else if(sunburn.util.bchunks.contains(s+"q")){
+			sunburn.util.burnChunk(c);
+			sunburn.util.bchunks.remove(s+"q");
+			sunburn.util.bchunks.add(s+"b");
+			if(sunburn.config.notify){
+				sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burned Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
+			}
+		}else if(sunburn.util.bchunks.contains(s+"b")){
+			p.sendMessage("[\u00A74Sunburn\u00A7f] This chunk has already been burned!");
+		}else if(sunburn.util.bchunks.contains(s+"r")){
+			p.sendMessage("[\u00A74Sunburn\u00A7f] This chunk is scheduled for regeneration!");
+		}	
 	}
 
 	public void regenChunkAtPlayer(Player p){
 		Location loc = p.getLocation();
 		Chunk c = loc.getChunk();
-		p.getWorld().regenerateChunk(c.getX(), c.getZ());
-		
-		if(sunburn.config.notify){
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Regenerated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
+		String s = sunburn.util.getData(c);
+		if((!sunburn.util.bchunks.contains(s+"q"))&&(!sunburn.util.bchunks.contains(s+"b"))&&(!sunburn.util.bchunks.contains(s+"r"))){
+			p.sendMessage("[\u00A74Sunburn\u00A7f] This chunk has not been burned - no need to regen!");
+		}else if(sunburn.util.bchunks.contains(s+"q")){
+			p.getWorld().regenerateChunk(c.getX(), c.getZ());
+			sunburn.util.bchunks.remove(s+"q");
+			if(sunburn.config.notify){
+				sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Regenerated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
+			}
+		}else if(sunburn.util.bchunks.contains(s+"b")){
+			p.getWorld().regenerateChunk(c.getX(), c.getZ());
+			sunburn.util.bchunks.remove(s+"b");
+			if(sunburn.config.notify){
+				sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Regenerated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
+			}
+		}else if(sunburn.util.bchunks.contains(s+"r")){
+			p.getWorld().regenerateChunk(c.getX(), c.getZ());
+			sunburn.util.bchunks.remove(s+"r");
+			if(sunburn.config.notify){
+				sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Regenerated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
+			}
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void regenWorld(String name){
 		if(sunburn.config.wasteworlds.contains(name)){
 			sunburn.config.wasteworlds.remove(name);
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] World "+name+" can no longer generate wasteland chunks!");
 		}
 		sunburn.config.conf.set("wasteland_worlds", sunburn.config.wasteworlds);
-		File p = new File(sunburn.getDataFolder(), "config.yml");
-		sunburn.config.saveConf(sunburn.config.conf, p);
+		File f = new File(sunburn.getDataFolder(), "config.yml");
+		sunburn.config.saveConf(sunburn.config.conf, f);
 		sunburn.config.loadConf();
 		if(sunburn.config.notify){
 			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Will now regenerate all chunks in world: "+name);
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Do not reactivate wasteland generation for "+name+" until regen is complete");
 		}
-
+		for(String s : (ArrayList<String>)sunburn.util.bchunks.clone()){
+			if((s.contains(name+":"))&&(s.contains(":b"))){
+				String[] p = s.split(":");
+				sunburn.util.bchunks.remove(s);
+				sunburn.util.bchunks.add(p[0]+":"+p[1]+":"+p[2]+":r");
+			}else if((s.contains(name+":"))&&(s.contains(":q"))){
+				sunburn.util.bchunks.remove(s);
+			}
+		}
+		if(sunburn.config.notify){
+			String s = sunburn.util.count();
+			if(s!=null){
+				sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Autoburn: "+s);
+			}
+		}
 	}
 
 	public void toggleNotify(){

@@ -1,8 +1,6 @@
 package com.github.vsams14;
 
 import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -23,9 +21,9 @@ public class Util {
 	int totald, hd1, cd1, ld1, bd1;
 	int durability, al = 4096;
 	float hd, cd, ld, bd;
-	String armtype;
+	String armtype, counter="";
 	private SunBurn sunburn;
-	List<String> bchunks = new ArrayList<String>();
+	ArrayList<String> bchunks = new ArrayList<String>();
 
 
 	public Util(SunBurn sunburn){
@@ -387,55 +385,80 @@ public class Util {
 				String s = getData(c);
 				if((!bchunks.contains(s+"q"))&&(!bchunks.contains(s+"b"))&&(!bchunks.contains(s+"r"))){
 					bchunks.add(s+"q");
-					if(sunburn.config.notify){
-						sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Activated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+w.getName());
-						sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Using "+bchunks.size()+" array spaces!");
+				}
+			}
+		}
+	}
+
+	public String getData(Chunk c){
+		return c.getWorld().getName()+":"+c.getX()+":"+c.getZ()+":";
+	}
+
+	@SuppressWarnings("unchecked")
+	public void wasteOneChunk(){
+		for(World w : sunburn.getServer().getWorlds()){
+			//sunburn.getServer().broadcastMessage(w.getLoadedChunks().length+" Chunks Loaded in world: "+w.getName());
+			inner:
+			if(sunburn.config.wasteworlds.contains(w.getName())){
+				for(Chunk c : w.getLoadedChunks()){
+					String s = getData(c) + "q";
+					if(bchunks.contains(s)){
+						burnChunk(c);
+						w.refreshChunk(c.getX(), c.getZ());
+						bchunks.remove(s);
+						bchunks.add(getData(c)+"b");
+						//sunburn.getServer().broadcastMessage("Loaded Burn");
+						break inner;
+					}
+				}
+				for(String s : (ArrayList<String>)bchunks.clone()){
+					if((s.contains(":q"))&&(s.contains(w.getName()+":"))){
+						String[] p = s.split(":");
+						Chunk c = w.getChunkAt(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+						burnChunk(c);
+						w.refreshChunk(c.getX(), c.getZ());
+						c.unload(true);
+						bchunks.remove(s);
+						bchunks.add(getData(c)+"b");
+						//sunburn.getServer().broadcastMessage("Unloaded Burn");
+						break inner;
+					}
+				}
+			}else{
+				int c = 0;
+				for(String s : (ArrayList<String>)bchunks.clone()){
+					if((s.contains(":r"))&&(s.contains(w.getName()+":"))){
+						String[] p = s.split(":");
+						w.regenerateChunk(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+						w.refreshChunk(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+						bchunks.remove(s);
+						c++;
+						if(c==25){
+							break;
+						}
 					}
 				}
 			}
 		}
 	}
-	
-	public String getData(Chunk c){
-		return c.getWorld().getName()+":"+c.getX()+":"+c.getZ()+":";
-	}
 
-	public void wasteOneChunk(){
-		for(World w : sunburn.getServer().getWorlds()){
-			inner:
-			if(sunburn.config.wasteworlds.contains(w.getName())){
-				for(String s : bchunks){
-					if((s.contains(":q"))&&(s.contains(w.getName()+":"))){
-						String[] p = s.split(":");
-						Chunk c = w.getChunkAt(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
-						if(c.isLoaded()){
-							burnChunk(c);
-						}else{
-							c.load();
-							burnChunk(c);
-							c.unload(true);
-						}
-						bchunks.remove(s);
-						bchunks.add(p[0]+":"+p[1]+":"+p[2]+":b");
-						if(sunburn.config.notify){
-							sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burned Chunk at ("+p[1]+", "+p[2]+") in world: "+p[0]);
-						}
-						break inner;
-					}
-				}
-			}else{
-				for(String s : bchunks){
-					if((s.contains(":r"))&&(s.contains(w.getName()+":"))){
-						String[] p = s.split(":");
-						w.regenerateChunk(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
-						bchunks.remove(s);
-						bchunks.add(p[0]+":"+p[1]+":"+p[2]+":q");
-						if(sunburn.config.notify){
-							sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Regenerated Chunk at ("+p[1]+", "+p[2]+") in world: "+p[0]);
-						}
-					}
-				}
+	@SuppressWarnings("unchecked")
+	public String count(){
+		int q=0, b=0, r=0;
+		for(String s : (ArrayList<String>)bchunks.clone()){
+			if(s.contains(":q")){
+				q++;
+			}else if(s.contains(":b")){
+				b++;
+			}else if(s.contains(":r")){
+				r++;
 			}
+		}
+		if(counter.equalsIgnoreCase(q+" in queue, "+b+" finished, "+r+" for regen")){
+			return null;
+		}else{
+			counter = q+" in queue, "+b+" finished, "+r+" for regen";
+			return counter;
 		}
 	}
 }

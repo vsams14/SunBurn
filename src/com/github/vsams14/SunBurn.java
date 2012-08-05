@@ -140,6 +140,20 @@ public class SunBurn extends JavaPlugin {
 			}
 		}
 		, 0L , 160L);
+		
+		//Status messages, 2 seconds
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
+		{
+			public void run() {					
+				if(config.notify){
+					String s = util.count();
+					if(s!=null){
+						getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Autoburn: "+s);
+					}
+				}
+			}
+		}
+		, 0L , 40L);
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
