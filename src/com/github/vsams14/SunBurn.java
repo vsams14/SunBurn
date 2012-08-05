@@ -145,10 +145,15 @@ public class SunBurn extends JavaPlugin {
 		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
 		{
 			public void run() {					
-				if(config.notify){
+				if(config.notify.equalsIgnoreCase("broadcast")){
 					String s = util.count();
 					if(s!=null){
-						getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Autoburn: "+s);
+						com.broadcast("Autoburn: "+s);
+					}
+				}else if(config.notify.equalsIgnoreCase("log")){
+					String s = util.count();
+					if(s!=null){
+						log.info("Autoburn: "+s);
 					}
 				}
 			}
@@ -162,7 +167,7 @@ public class SunBurn extends JavaPlugin {
 			config.reConf();
 			return ret;
 		}else{
-			getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Waiting for update. Sunburn is disabled");
+			com.broadcast("Waiting for update. Sunburn is disabled");
 			log.info("Waiting for update. Sunburn is disabled");
 			return true;
 		}

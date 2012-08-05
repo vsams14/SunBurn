@@ -397,7 +397,6 @@ public class Util {
 	@SuppressWarnings("unchecked")
 	public void wasteOneChunk(){
 		for(World w : sunburn.getServer().getWorlds()){
-			//sunburn.getServer().broadcastMessage(w.getLoadedChunks().length+" Chunks Loaded in world: "+w.getName());
 			inner:
 			if(sunburn.config.wasteworlds.contains(w.getName())){
 				for(Chunk c : w.getLoadedChunks()){
@@ -407,7 +406,6 @@ public class Util {
 						w.refreshChunk(c.getX(), c.getZ());
 						bchunks.remove(s);
 						bchunks.add(getData(c)+"b");
-						//sunburn.getServer().broadcastMessage("Loaded Burn");
 						break inner;
 					}
 				}
@@ -420,7 +418,6 @@ public class Util {
 						c.unload(true);
 						bchunks.remove(s);
 						bchunks.add(getData(c)+"b");
-						//sunburn.getServer().broadcastMessage("Unloaded Burn");
 						break inner;
 					}
 				}

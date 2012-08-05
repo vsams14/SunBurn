@@ -1,13 +1,15 @@
 # For help with this configuration, please see:
 # http://dev.bukkit.org/server-mods/sunburn-reborn/pages/config/#w-main
+#
+#Notify can only be 'log', 'broadcast', or 'none'
 
 version: 1.7.4
+notify: log
 burn_damage: 0
 burn_animals: true
 burn_players: true
 chunk_depth: 5
 auto_waste: false
-notify_waste: true
 Armor_Type: CHAIN
 Durability: 5
 Armor_On: true

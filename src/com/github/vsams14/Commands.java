@@ -81,6 +81,13 @@ public class Commands {
 							changeArmor(args[1]);
 							return true;
 						}
+					}else if(args[0].equalsIgnoreCase("notify")){
+						if(sendee.hasPermission("sunburn.toggle")){
+							if(args[1].equalsIgnoreCase("log")||args[1].equalsIgnoreCase("broadcast")||args[1].equalsIgnoreCase("none")){
+								toggleNotify(args[1]);
+								return true;
+							}
+						}
 					}
 				}
 				return false;
@@ -122,6 +129,11 @@ public class Commands {
 						World w = sunburn.getServer().getWorld(args[1]);
 						lockWorld(w);
 						return true;
+					}else if(args[0].equalsIgnoreCase("notify")){
+						if(args[1].equalsIgnoreCase("log")||args[1].equalsIgnoreCase("broadcast")||args[1].equalsIgnoreCase("none")){
+							toggleNotify(args[1]);
+							return true;
+						}
 					}
 				}
 			}
@@ -173,9 +185,6 @@ public class Commands {
 						}else if(args[0].equalsIgnoreCase("world")){
 							toggleWwaste(sendee.getWorld().getName());
 							return true;
-						}else if(args[0].equalsIgnoreCase("notify")){
-							toggleNotify();
-							return true;
 						}
 						return false;
 
@@ -209,10 +218,6 @@ public class Commands {
 					return true;
 
 				case 1:
-					if(args[0].equalsIgnoreCase("notify")){
-						toggleNotify();
-						return true;
-					}
 					return false;
 
 				case 2:
@@ -236,11 +241,11 @@ public class Commands {
 
 	public void toggleAll(){
 		if(sunburn.config.disabled){
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Enabled");
+			broadcast("Enabled");
 			sunburn.config.loadConf();
 			sunburn.config.disabled = false;
 		}else{
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Disabled");
+			broadcast("Disabled");
 			sunburn.config.bPlayer = false;
 			sunburn.config.bAnimal = false;
 			sunburn.config.autoburn = false;
@@ -250,20 +255,20 @@ public class Commands {
 
 	public void togglePburn(){
 		if(sunburn.config.bPlayer){
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] PlayerBurn Disabled");
+			broadcast("PlayerBurn Disabled");
 			sunburn.config.bPlayer = false;
 		}else{
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] PlayerBurn Enabled");
+			broadcast("PlayerBurn Enabled");
 			sunburn.config.bPlayer = true;
 		}
 	}
 
 	public void toggleMburn(){
 		if(sunburn.config.bAnimal){
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] MobBurn Disabled");
+			broadcast("MobBurn Disabled");
 			sunburn.config.bAnimal = false;
 		}else{
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] MobBurn Enabled");
+			broadcast("MobBurn Enabled");
 			sunburn.config.bAnimal = true;
 		}
 	}
@@ -273,10 +278,10 @@ public class Commands {
 			int x = sunburn.config.wMap.get(w.getName());
 			if(sunburn.config.wtime[x].locked){
 				sunburn.config.wtime[x].locked = false;
-				sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] World "+sunburn.config.wtime[x].name+" unlocked!");
+				broadcast("World "+sunburn.config.wtime[x].name+" unlocked!");
 			}else{
 				sunburn.config.wtime[x].locked = true;
-				sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] World "+sunburn.config.wtime[x].name+" locked!");
+				broadcast("World "+sunburn.config.wtime[x].name+" locked!");
 				sunburn.config.wtime[x].locktime = w.getTime();
 				sunburn.config.wtime[x].wdur = w.hasStorm();
 			}
@@ -293,13 +298,13 @@ public class Commands {
 		if(sunburn.config.armor){
 			sunburn.config.armor = false;
 			sunburn.config.conf.set("Armor_On", false);
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Armor Disabled");
+			broadcast("Armor Disabled");
 			File p = new File(sunburn.getDataFolder(), "config.yml");
 			sunburn.config.saveConf(sunburn.config.conf, p);
 		}else{
 			sunburn.config.armor = true;
 			sunburn.config.conf.set("Armor_On", true);
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Armor Enabled");
+			broadcast("Armor Enabled");
 			File p = new File(sunburn.getDataFolder(), "config.yml");
 			sunburn.config.saveConf(sunburn.config.conf, p);
 		}
@@ -308,10 +313,10 @@ public class Commands {
 	public void toggleWburn(String name){
 		if(sunburn.config.worlds.contains(name)){
 			sunburn.config.worlds.remove(name);
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] World "+name+" is no longer being burned.");
+			broadcast("World "+name+" is no longer being burned.");
 		}else{
 			sunburn.config.worlds.add(name);
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] World "+name+" is now being burned.");
+			broadcast("World "+name+" is now being burned.");
 		}
 		sunburn.config.conf.set("worlds", sunburn.config.worlds);
 		File p = new File(sunburn.getDataFolder(), "config.yml");
@@ -322,10 +327,10 @@ public class Commands {
 	public void toggleAWaste(){
 		if(sunburn.config.autoburn){
 			sunburn.config.autoburn = false;
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Automatic Wasteland Generation turned off!");
+			broadcast("Automatic Wasteland Generation turned off!");
 		}else{
 			sunburn.config.autoburn = true;
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Automatic Wasteland Generation turned on!");
+			broadcast("Automatic Wasteland Generation turned on!");
 		}
 		sunburn.config.conf.set("auto_waste", sunburn.config.autoburn);
 		File p = new File(sunburn.getDataFolder(), "config.yml");
@@ -352,13 +357,13 @@ public class Commands {
 		if(sunburn.util.isInteger(s)){
 			sunburn.util.durability = Integer.parseInt(s);
 			sunburn.config.conf.set("Durability", sunburn.util.durability);
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Durability set to: "+sunburn.util.durability);
+			broadcast("Durability set to: "+sunburn.util.durability);
 			File p = new File(sunburn.getDataFolder(), "config.yml");
 			sunburn.config.saveConf(sunburn.config.conf, p);
 			sunburn.config.loadConf();
 		}else{
 			sunburn.config.conf.set("Armor_Type", s);
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Armor set to: "+s.toUpperCase());
+			broadcast("Armor set to: "+s.toUpperCase());
 			File p = new File(sunburn.getDataFolder(), "config.yml");
 			sunburn.config.saveConf(sunburn.config.conf, p);
 			sunburn.config.loadConf();
@@ -368,10 +373,10 @@ public class Commands {
 	public void toggleWwaste(String name){
 		if(sunburn.config.wasteworlds.contains(name)){
 			sunburn.config.wasteworlds.remove(name);
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] World "+name+" can no longer generate wasteland chunks!");
+			broadcast("World "+name+" can no longer generate wasteland chunks!");
 		}else{
 			sunburn.config.wasteworlds.add(name);
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] World "+name+" can now generate wasteland chunks!");
+			broadcast("World "+name+" can now generate wasteland chunks!");
 		}
 		sunburn.config.conf.set("wasteland_worlds", sunburn.config.wasteworlds);
 		File p = new File(sunburn.getDataFolder(), "config.yml");
@@ -386,16 +391,12 @@ public class Commands {
 		if((!sunburn.util.bchunks.contains(s+"q"))&&(!sunburn.util.bchunks.contains(s+"b"))&&(!sunburn.util.bchunks.contains(s+"r"))){
 			sunburn.util.burnChunk(c);
 			sunburn.util.bchunks.add(s+"b");
-			if(sunburn.config.notify){
-				sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burned Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
-			}
+			broadcast("Burned Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
 		}else if(sunburn.util.bchunks.contains(s+"q")){
 			sunburn.util.burnChunk(c);
 			sunburn.util.bchunks.remove(s+"q");
 			sunburn.util.bchunks.add(s+"b");
-			if(sunburn.config.notify){
-				sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Burned Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
-			}
+			broadcast("Burned Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
 		}else if(sunburn.util.bchunks.contains(s+"b")){
 			p.sendMessage("[\u00A74Sunburn\u00A7f] This chunk has already been burned!");
 		}else if(sunburn.util.bchunks.contains(s+"r")){
@@ -412,21 +413,15 @@ public class Commands {
 		}else if(sunburn.util.bchunks.contains(s+"q")){
 			p.getWorld().regenerateChunk(c.getX(), c.getZ());
 			sunburn.util.bchunks.remove(s+"q");
-			if(sunburn.config.notify){
-				sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Regenerated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
-			}
+			broadcast("Regenerated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
 		}else if(sunburn.util.bchunks.contains(s+"b")){
 			p.getWorld().regenerateChunk(c.getX(), c.getZ());
 			sunburn.util.bchunks.remove(s+"b");
-			if(sunburn.config.notify){
-				sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Regenerated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
-			}
+			broadcast("Regenerated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
 		}else if(sunburn.util.bchunks.contains(s+"r")){
 			p.getWorld().regenerateChunk(c.getX(), c.getZ());
 			sunburn.util.bchunks.remove(s+"r");
-			if(sunburn.config.notify){
-				sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Regenerated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
-			}
+			broadcast("Regenerated Chunk at ("+c.getX()+", "+c.getZ()+") in world: "+p.getWorld().getName());
 		}
 	}
 
@@ -439,9 +434,7 @@ public class Commands {
 		File f = new File(sunburn.getDataFolder(), "config.yml");
 		sunburn.config.saveConf(sunburn.config.conf, f);
 		sunburn.config.loadConf();
-		if(sunburn.config.notify){
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Will now regenerate all chunks in world: "+name);
-		}
+		broadcast("Will now regenerate all chunks in world: "+name);
 		for(String s : (ArrayList<String>)sunburn.util.bchunks.clone()){
 			if((s.contains(name+":"))&&(s.contains(":b"))){
 				String[] p = s.split(":");
@@ -451,25 +444,34 @@ public class Commands {
 				sunburn.util.bchunks.remove(s);
 			}
 		}
-		if(sunburn.config.notify){
-			String s = sunburn.util.count();
-			if(s!=null){
-				sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Autoburn: "+s);
-			}
+		String s = sunburn.util.count();
+		if(s!=null){
+			broadcast("Autoburn: "+s);
 		}
 	}
 
-	public void toggleNotify(){
-		if(sunburn.config.notify){
-			sunburn.config.notify = false;
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Will stop notifying about wasteland generation!");
-		}else{
-			sunburn.config.notify = true;
-			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Will notify about wasteland generation!");
+	public void toggleNotify(String s){
+		if(s.equalsIgnoreCase("log")){
+			sunburn.config.notify = s;
+			broadcast("Will only log notifications!");
+		}else if(s.equalsIgnoreCase("broadcast")){
+			sunburn.config.notify = s;
+			broadcast("Will broadcast notifications!");
+		}else if(s.equalsIgnoreCase("none")){
+			sunburn.config.notify = s;
+			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Will no longer notify!");
 		}
 		sunburn.config.conf.set("notify_waste", sunburn.config.notify);
 		File p = new File(sunburn.getDataFolder(), "config.yml");
 		sunburn.config.saveConf(sunburn.config.conf, p);
 		sunburn.config.loadConf();
+	}
+
+	public void broadcast(String s){
+		if(sunburn.config.notify.equalsIgnoreCase("log")){
+			sunburn.log.info(s);
+		}else if(sunburn.config.notify.equalsIgnoreCase("broadcast")){
+			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] "+s);
+		}
 	}
 }

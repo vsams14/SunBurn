@@ -26,7 +26,7 @@ public class Config{
 	public boolean disabled = false;
 	public boolean armor = true;
 	public boolean autoburn = false;
-	public boolean notify = true;
+	public String notify = "broadcast";
 	public int pb, cd = 5;
 	public List<String> worlds, wasteworlds;
 	public List<String> pwl;
@@ -68,7 +68,7 @@ public class Config{
 		armor = conf.getBoolean("Armor_On");
 		cd = conf.getInt("chunk_depth");
 		autoburn = conf.getBoolean("auto_waste");
-		notify = conf.getBoolean("notify_waste");
+		notify = conf.getString("notify");
 		wasteworlds = conf.getStringList("wasteland_worlds");
 	}
 
@@ -118,12 +118,12 @@ public class Config{
 			worldConfig.setDefaults(defConfig);
 		}
 		worldConfig.set("version", sunburn.getDescription().getVersion());
+		worldConfig.set("notify", notify);
 		worldConfig.set("burn_damage", pb);
 		worldConfig.set("burn_animals", bAnimal);
 		worldConfig.set("burn_players", bPlayer);
 		worldConfig.set("chunk_depth", cd);
 		worldConfig.set("auto_waste", autoburn);
-		worldConfig.set("notify_waste", notify);
 		worldConfig.set("Armor_Type", sunburn.util.armtype);
 		worldConfig.set("Durability", sunburn.util.durability);
 		worldConfig.set("Armor_On", armor);
@@ -196,7 +196,7 @@ public class Config{
 					readFile.close();
 
 				} catch (FileNotFoundException e) {
-					sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] "+w.getName()+"_chunks.yml could not be found! Make sure that this is not an error!");
+					sunburn.com.broadcast(w.getName()+"_chunks.yml could not be found! Make sure that this is not an error!");
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
