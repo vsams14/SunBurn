@@ -461,7 +461,7 @@ public class Commands {
 			sunburn.config.notify = s;
 			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Will no longer notify!");
 		}
-		sunburn.config.conf.set("notify_waste", sunburn.config.notify);
+		sunburn.config.conf.set("notify", sunburn.config.notify);
 		File p = new File(sunburn.getDataFolder(), "config.yml");
 		sunburn.config.saveConf(sunburn.config.conf, p);
 		sunburn.config.loadConf();
