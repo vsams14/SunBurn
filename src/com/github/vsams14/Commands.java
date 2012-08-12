@@ -454,14 +454,16 @@ public class Commands {
 		if(s.equalsIgnoreCase("log")){
 			sunburn.config.notify = s;
 			broadcast("Will only log notifications!");
+			sunburn.config.conf.set("notify", "log");
 		}else if(s.equalsIgnoreCase("broadcast")){
 			sunburn.config.notify = s;
 			broadcast("Will broadcast notifications!");
+			sunburn.config.conf.set("notify", "broadcast");
 		}else if(s.equalsIgnoreCase("none")){
 			sunburn.config.notify = s;
 			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Will no longer notify!");
+			sunburn.config.conf.set("notify", "none");
 		}
-		sunburn.config.conf.set("notify", sunburn.config.notify);
 		File p = new File(sunburn.getDataFolder(), "config.yml");
 		sunburn.config.saveConf(sunburn.config.conf, p);
 		sunburn.config.loadConf();
