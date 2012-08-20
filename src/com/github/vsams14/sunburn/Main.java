@@ -1,4 +1,4 @@
-package com.github.vsams14;
+package com.github.vsams14.sunburn;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,11 +11,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.vsams14.extras.LoginListener;
-import com.github.vsams14.extras.Metrics;
-import com.github.vsams14.extras.WorldTime;
+import com.github.vsams14.sunburn.extras.LoginListener;
+import com.github.vsams14.sunburn.extras.Metrics;
+import com.github.vsams14.sunburn.extras.WorldTime;
 
-public class SunBurn extends JavaPlugin {
+public class Main extends JavaPlugin {
 
 	public Logger log;	
 

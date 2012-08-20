@@ -1,17 +1,17 @@
-package com.github.vsams14.extras;
+package com.github.vsams14.sunburn.extras;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerLoginEvent;
 
-import com.github.vsams14.SunBurn;
+import com.github.vsams14.sunburn.Main;
 
 public class LoginListener implements Listener {
 
-	private SunBurn sunburn;
+	private Main sunburn;
 
-	public LoginListener(SunBurn plugin){
+	public LoginListener(Main plugin){
 		plugin.getServer().getPluginManager().registerEvents(this, plugin);
 		this.sunburn = plugin;
 	}

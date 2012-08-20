@@ -1,4 +1,4 @@
-package com.github.vsams14;
+package com.github.vsams14.sunburn;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,9 +13,9 @@ import org.bukkit.entity.Player;
 
 public class Commands {
 
-	private SunBurn sunburn;
+	private Main sunburn;
 
-	public Commands(SunBurn sunburn){
+	public Commands(Main sunburn){
 		this.sunburn = sunburn;
 	}
 

@@ -1,4 +1,4 @@
-package com.github.vsams14;
+package com.github.vsams14.sunburn;
 
 import java.util.ArrayList;
 import org.bukkit.Chunk;
@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffectType;
 
-import com.github.vsams14.extras.WorldTime;
+import com.github.vsams14.sunburn.extras.WorldTime;
 
 public class Util {
 
@@ -22,11 +22,11 @@ public class Util {
 	int durability, al = 4096;
 	float hd, cd, ld, bd;
 	String armtype, counter="";
-	private SunBurn sunburn;
+	private Main sunburn;
 	ArrayList<String> bchunks = new ArrayList<String>();
 
 
-	public Util(SunBurn sunburn){
+	public Util(Main sunburn){
 		this.sunburn = sunburn;
 	}
 

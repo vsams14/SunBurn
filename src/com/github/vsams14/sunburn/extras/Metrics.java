@@ -26,7 +26,7 @@
  * either expressed or implied, of anybody else.
  */
 
-package com.github.vsams14.extras;
+package com.github.vsams14.sunburn.extras;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -34,7 +34,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-import com.github.vsams14.SunBurn;
+import com.github.vsams14.sunburn.Main;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -65,7 +65,7 @@ public class Metrics {
 	private static final String CUSTOM_DATA_SEPARATOR = "~~";
 	private static final int PING_INTERVAL = 10;
 	private final Plugin plugin;
-	private SunBurn sunburn;
+	private Main sunburn;
 	private Map<Plugin, Set<Graph>> graphs = Collections.synchronizedMap(new HashMap<Plugin, Set<Graph>>());
 	private Graph burnGraph, wasteGraph;
 	private final YamlConfiguration configuration;
@@ -431,7 +431,7 @@ public class Metrics {
 	}
 
 
-	public void findCustomData(SunBurn sunburn){
+	public void findCustomData(Main sunburn){
 		this.sunburn = sunburn;
 		burnGraph = createGraph(sunburn, Metrics.Graph.Type.Line, "Burning");
 		wasteGraph = createGraph(sunburn, Metrics.Graph.Type.Line, "Wasteland Worlds");

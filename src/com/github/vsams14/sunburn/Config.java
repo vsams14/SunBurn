@@ -1,4 +1,4 @@
-package com.github.vsams14;
+package com.github.vsams14.sunburn;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,7 +17,7 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import com.github.vsams14.extras.WorldTime;
+import com.github.vsams14.sunburn.extras.WorldTime;
 
 public class Config{
 
@@ -34,9 +34,9 @@ public class Config{
 	YamlConfiguration conf = new YamlConfiguration();
 	WorldTime[] wtime;
 	Map<String, Integer> wMap = new HashMap<String, Integer>();
-	private SunBurn sunburn;
+	private Main sunburn;
 
-	public Config(SunBurn sunburn){
+	public Config(Main sunburn){
 		this.sunburn = sunburn;
 	}
 

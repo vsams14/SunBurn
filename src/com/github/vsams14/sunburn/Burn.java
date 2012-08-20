@@ -1,4 +1,4 @@
-package com.github.vsams14;
+package com.github.vsams14.sunburn;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,9 +15,9 @@ import org.bukkit.potion.PotionEffectType;
 public class Burn {
 
 	Map <Player, Integer> smite = new HashMap<Player, Integer>();
-	private SunBurn sunburn;
+	private Main sunburn;
 
-	public Burn(SunBurn sunburn){
+	public Burn(Main sunburn){
 		this.sunburn = sunburn;
 	}
 

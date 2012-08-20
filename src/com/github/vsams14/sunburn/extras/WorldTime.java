@@ -1,4 +1,4 @@
-package com.github.vsams14.extras;
+package com.github.vsams14.sunburn.extras;
 
 public class WorldTime {
 	public String name;

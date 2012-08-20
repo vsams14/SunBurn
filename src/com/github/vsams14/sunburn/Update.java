@@ -1,4 +1,4 @@
-package com.github.vsams14;
+package com.github.vsams14.sunburn;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -37,9 +37,9 @@ public class Update{
 	int changes;
 	boolean off = false;
 	File folder;
-	private SunBurn sunburn;
+	private Main sunburn;
 
-	public Update(SunBurn sunburn){
+	public Update(Main sunburn){
 		this.sunburn = sunburn;
 	}
 
