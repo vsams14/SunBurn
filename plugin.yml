@@ -1,6 +1,6 @@
 name: SunBurn2
 main: com.github.vsams14.sunburn.Main
-version: 1.7.5
+version: 1.7.6
 authors: [vsams14, jkubs15]
 
 commands:

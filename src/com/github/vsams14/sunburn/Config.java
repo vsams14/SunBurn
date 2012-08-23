@@ -26,6 +26,8 @@ public class Config{
 	public boolean disabled = false;
 	public boolean armor = true;
 	public boolean autoburn = false;
+	public boolean checkforup = true;
+	public boolean canupdate = true;
 	public String notify = "broadcast";
 	public int pb, cd = 5;
 	public List<String> worlds, wasteworlds;
@@ -70,6 +72,8 @@ public class Config{
 		autoburn = conf.getBoolean("auto_waste");
 		notify = conf.getString("notify");
 		wasteworlds = conf.getStringList("wasteland_worlds");
+		checkforup = conf.getBoolean("check_for_updates");
+		canupdate = conf.getBoolean("auto_update");
 	}
 
 	public void addExceptions(){
@@ -118,6 +122,8 @@ public class Config{
 			worldConfig.setDefaults(defConfig);
 		}
 		worldConfig.set("version", sunburn.getDescription().getVersion());
+		worldConfig.set("check_for_updates", checkforup);
+		worldConfig.set("auto_update", canupdate);
 		worldConfig.set("notify", notify);
 		worldConfig.set("burn_damage", pb);
 		worldConfig.set("burn_animals", bAnimal);

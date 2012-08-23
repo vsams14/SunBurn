@@ -66,47 +66,58 @@ public class Main extends JavaPlugin {
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
 			public void run() {
-				if(update.isCurrent()){
-					if(runs == 0){
-						log.info("");
-						log.info("");
-						if(update.changes<0){
-							log.info("You have a developer beta version.");
-							log.info("If you are not vsams14 or a beta tester,");
-							log.info("please use a regular version!");
-						}else{
-							log.info("This plugin version is current. No need to update.");
+				if(config.checkforup){
+					if(update.isCurrent()){
+						if(runs == 0){
+							log.info("");
+							log.info("");
+							if(update.changes<0){
+								log.info("You have a developer beta version.");
+								log.info("If you are not vsams14 or a beta tester,");
+								log.info("please use a regular version!");
+							}else{
+								log.info("This plugin version is current. No need to update.");
+							}
+							log.info("");
+							log.info("");
+							runs += 1;
 						}
-						log.info("");
-						log.info("");
-						runs += 1;
-					}
+					}else{
+						if(runs == 0){
+							log.info("");
+							log.info("");
+						}
+
+						if(update.changes<10){
+							log.info("There have been minor changes or bugfixes. UPDATING!");
+						}else if(update.changes<100){
+							log.info("There may be some new features and major changes. UPDATING!");
+						}else if(update.changes<1000){
+							log.info("There are some really major changes. UPDATING!");
+						}
+						try {
+							if(config.canupdate){
+								update.update();
+								log.info("The server will now shut down.");	
+							}else{
+								log.info("Updating is DISABLED! Please change your configuration!");
+							}
+						} catch (IOException e) {
+							e.printStackTrace();
+						} catch (BadLocationException e) {
+							e.printStackTrace();
+						}
+
+						if(runs == 0){
+							log.info("");
+							log.info("");
+							runs += 1;
+						}
+					}	
 				}else{
-					if(runs == 0){
-						log.info("");
-						log.info("");
-					}
-
-					if(update.changes<10){
-						log.info("There have been minor changes or bugfixes. UPDATING!");
-					}else if(update.changes<100){
-						log.info("There may be some new features and major changes. UPDATING!");
-					}else if(update.changes<1000){
-						log.info("There are some really major changes. UPDATING!");
-					}
-					try {
-						update.update();
-						log.info("The server will now shut down.");
-					} catch (IOException e) {
-						e.printStackTrace();
-					} catch (BadLocationException e) {
-						e.printStackTrace();
-					}
-
-					if(runs == 0){
-						log.info("");
-						log.info("");
-						runs += 1;
+					if(runs==0){
+						log.info("Checking for updates is DISABLED! Please change your config!");
+						runs++;
 					}
 				}
 			}
