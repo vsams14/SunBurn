@@ -20,15 +20,11 @@ permissions:
    sunburn.*:
       description: Gives access to all SunBurn nodes.
       children:
-         sunburn.protect: true
          sunburn.toggle: true
          sunburn.pburn: true
          sunburn.waste: true
          sunburn.time: true
          sunburn.usmite: true
-      
-   sunburn.protect:
-      description: Protects the player from sunburn
       
    sunburn.toggle:
       description: Allows toggling of plugin functions.

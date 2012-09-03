@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.vsams14.sunburn.extras.LoginListener;
 import com.github.vsams14.sunburn.extras.Metrics;
 import com.github.vsams14.sunburn.extras.WorldTime;
 
@@ -29,7 +28,6 @@ public class Main extends JavaPlugin {
 
 	public void onEnable(){
 		log = this.getLogger();
-		new LoginListener(this);
 		
 		config.loadConf();
 		config.reConf();
