@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import javax.swing.text.BadLocationException;
 
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -18,16 +19,21 @@ public class Main extends JavaPlugin {
 
 	public Logger log;	
 
-	public Util util = new Util(this);
-	public Commands com = new Commands(this);
-	public Burn burn = new Burn(this);
-	public Config config = new Config(this);
-	public Update update = new Update(this);
+	public Util util;
+	public Commands com;
+	public Burn burn;
+	public Config config;
+	public Update update;
 	int timer = 15;
 	int runs = 0;
 
 	public void onEnable(){
-		log = this.getLogger();
+		log = getLogger();
+		com = new Commands(this);
+		util = new Util(this);
+		burn = new Burn(this);
+		config = new Config(this);
+		update = new Update(this);
 		
 		config.loadConf();
 		config.reConf();
@@ -53,7 +59,13 @@ public class Main extends JavaPlugin {
 				burn.usmite();
 				if(config.autoburn){
 					util.getAutoBurnedChunks();
-					util.wasteOneChunk();
+					for(World w : getServer().getWorlds()){
+						util.wasteOneChunk(w);
+						//String s = util.wasteOneChunk(w);
+						//if((s!=null)&&(config.broadcastchunks==true)){
+						//	log.info(s);
+						//}
+					}					
 				}
 			}
 
@@ -153,17 +165,19 @@ public class Main extends JavaPlugin {
 		//Status messages, 2 seconds
 		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
 		{
-			public void run() {					
-				if(config.notify.equalsIgnoreCase("broadcast")){
-					String s = util.count();
-					if(s!=null){
-						com.broadcast("Autoburn: "+s);
-					}
-				}else if(config.notify.equalsIgnoreCase("log")){
-					String s = util.count();
-					if(s!=null){
-						log.info("Autoburn: "+s);
-					}
+			public void run() {	
+				if(config.broadcastchunks){
+					if(config.notify.equalsIgnoreCase("broadcast")){
+						String s = util.count();
+						if(s!=null){
+							com.broadcast("Autoburn: "+s);
+						}
+					}else if(config.notify.equalsIgnoreCase("log")){
+						String s = util.count();
+						if(s!=null){
+							log.info("Autoburn: "+s);
+						}
+					}	
 				}
 			}
 		}

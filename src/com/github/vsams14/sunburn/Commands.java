@@ -82,8 +82,9 @@ public class Commands {
 							return true;
 						}
 					}else if(args[0].equalsIgnoreCase("notify")){
-						if(sendee.hasPermission("sunburn.toggle")){
-							if(args[1].equalsIgnoreCase("log")||args[1].equalsIgnoreCase("broadcast")||args[1].equalsIgnoreCase("none")){
+						if((sendee.hasPermission("sunburn.toggle"))||(sendee.isOp())){
+							if(args[1].equalsIgnoreCase("log")||args[1].equalsIgnoreCase("broadcast")||
+									args[1].equalsIgnoreCase("none")||(args[1].equalsIgnoreCase("chunks"))){
 								toggleNotify(args[1]);
 								return true;
 							}
@@ -130,7 +131,8 @@ public class Commands {
 						lockWorld(w);
 						return true;
 					}else if(args[0].equalsIgnoreCase("notify")){
-						if(args[1].equalsIgnoreCase("log")||args[1].equalsIgnoreCase("broadcast")||args[1].equalsIgnoreCase("none")){
+						if(args[1].equalsIgnoreCase("log")||args[1].equalsIgnoreCase("broadcast")||
+								args[1].equalsIgnoreCase("none")||(args[1].equalsIgnoreCase("chunks"))){
 							toggleNotify(args[1]);
 							return true;
 						}
@@ -183,14 +185,14 @@ public class Commands {
 							burnChunkAtPlayer(sendee);
 							return true;
 						}else if(args[0].equalsIgnoreCase("world")){
-							toggleWwaste(sendee.getWorld().getName());
+							toggleWwaste(sendee.getWorld().getName().toLowerCase());
 							return true;
 						}
 						return false;
 
 					case 2:
 						if(args[0].equalsIgnoreCase("world")){
-							toggleWwaste(args[1]);
+							toggleWwaste(args[1].toLowerCase());
 							return true;
 						}else if(args[0].equalsIgnoreCase("regen")){
 							if(args[1].equalsIgnoreCase("chunk")){
@@ -222,7 +224,7 @@ public class Commands {
 
 				case 2:
 					if(args[0].equalsIgnoreCase("world")){
-						toggleWwaste(args[1]);
+						toggleWwaste(args[1].toLowerCase());
 						return true;
 					}else if(args[0].equalsIgnoreCase("regen")){
 						World w = sunburn.getServer().getWorld(args[1]);
@@ -427,8 +429,8 @@ public class Commands {
 
 	@SuppressWarnings("unchecked")
 	public void regenWorld(String name){
-		if(sunburn.config.wasteworlds.contains(name)){
-			sunburn.config.wasteworlds.remove(name);
+		if(sunburn.config.wasteworlds.contains(name.toLowerCase())){
+			sunburn.config.wasteworlds.remove(name.toLowerCase());
 		}
 		sunburn.config.conf.set("wasteland_worlds", sunburn.config.wasteworlds);
 		File f = new File(sunburn.getDataFolder(), "config.yml");
@@ -463,6 +465,11 @@ public class Commands {
 			sunburn.config.notify = s;
 			sunburn.getServer().broadcastMessage("[\u00A74Sunburn\u00A7f] Will no longer notify!");
 			sunburn.config.conf.set("notify", "none");
+		}else if(s.equalsIgnoreCase("chunks")){
+			sunburn.config.broadcastchunks = (sunburn.config.broadcastchunks == true)? false : true;
+			s = (sunburn.config.broadcastchunks == true)? "Will now notify of chunk generation!" : "Will no longer notify chunk generation!";
+			broadcast(s);
+			sunburn.config.conf.set("broadcast_chunks", sunburn.config.broadcastchunks);
 		}
 		File p = new File(sunburn.getDataFolder(), "config.yml");
 		sunburn.config.saveConf(sunburn.config.conf, p);

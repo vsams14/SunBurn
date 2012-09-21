@@ -28,6 +28,7 @@ public class Config{
 	public boolean autoburn = false;
 	public boolean checkforup = true;
 	public boolean canupdate = true;
+	public boolean broadcastchunks = false;
 	public String notify = "broadcast";
 	public int pb, cd = 5;
 	public List<String> worlds, wasteworlds;
@@ -74,6 +75,7 @@ public class Config{
 		wasteworlds = conf.getStringList("wasteland_worlds");
 		checkforup = conf.getBoolean("check_for_updates");
 		canupdate = conf.getBoolean("auto_update");
+		broadcastchunks = conf.getBoolean("broadcast_chunks");
 	}
 
 	public void addExceptions(){
@@ -125,6 +127,7 @@ public class Config{
 		worldConfig.set("check_for_updates", checkforup);
 		worldConfig.set("auto_update", canupdate);
 		worldConfig.set("notify", notify);
+		worldConfig.set("broadcast_chunks", broadcastchunks);
 		worldConfig.set("burn_damage", pb);
 		worldConfig.set("burn_animals", bAnimal);
 		worldConfig.set("burn_players", bPlayer);

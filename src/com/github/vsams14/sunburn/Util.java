@@ -1,6 +1,7 @@
 package com.github.vsams14.sunburn;
 
 import java.util.ArrayList;
+
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -381,13 +382,49 @@ public class Util {
 	public void getAutoBurnedChunks(){
 		for(String worlds : sunburn.config.wasteworlds){
 			World w = sunburn.getServer().getWorld(worlds);
-			for(Chunk c : w.getLoadedChunks()){
-				String s = getData(c);
-				if((!bchunks.contains(s+"q"))&&(!bchunks.contains(s+"b"))&&(!bchunks.contains(s+"r"))){
-					bchunks.add(s+"q");
+			if(w!=null){
+				for(Chunk c : w.getLoadedChunks()){
+					String s = getData(c);
+					if((!bchunks.contains(s+"q"))&&(!bchunks.contains(s+"b"))&&(!bchunks.contains(s+"r"))){
+						bchunks.add(s+"q");
+						//sunburn.com.broadcast("Added chunk "+s+"q!");
+					}
+				}	
+			}
+		}
+		sortChunks();
+	}
+	
+	public void sortChunks(){
+		int lx = 0, lz = 0, mx = 0, mz = 0;
+		for(String s : bchunks){
+			String[] p = s.split(":");
+			if(Integer.parseInt(p[1])<lx){
+				lx = Integer.parseInt(p[1]);
+			}
+			if(Integer.parseInt(p[2])<lz){
+				lz = Integer.parseInt(p[2]);
+			}
+			if(Integer.parseInt(p[1])>mx){
+				mx = Integer.parseInt(p[1]);
+			}
+			if(Integer.parseInt(p[2])>mz){
+				mz = Integer.parseInt(p[2]);
+			}
+		}
+		ArrayList<String> chunks = new ArrayList<String>();
+		for(int x = lx; x<=mx; x++){
+			for(int z = lz; z<=mz; z++){
+				String c = ":"+x+":"+z+":";
+				for(String s : bchunks){
+					if(s.contains(c)){
+						chunks.add(s);
+						break;
+					}
 				}
 			}
 		}
+		bchunks = chunks;
 	}
 
 	public String getData(Chunk c){
@@ -395,48 +432,46 @@ public class Util {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void wasteOneChunk(){
-		for(World w : sunburn.getServer().getWorlds()){
-			inner:
-			if(sunburn.config.wasteworlds.contains(w.getName())){
-				for(Chunk c : w.getLoadedChunks()){
-					String s = getData(c) + "q";
-					if(bchunks.contains(s)){
-						burnChunk(c);
-						w.refreshChunk(c.getX(), c.getZ());
-						bchunks.remove(s);
-						bchunks.add(getData(c)+"b");
-						break inner;
-					}
+	public String wasteOneChunk(World w){
+		if(sunburn.config.wasteworlds.contains(w.getName().toLowerCase())){
+			for(Chunk c : w.getLoadedChunks()){
+				String s = getData(c) + "q";
+				if(bchunks.contains(s)){
+					burnChunk(c);
+					w.refreshChunk(c.getX(), c.getZ());
+					bchunks.remove(s);
+					bchunks.add(getData(c)+"b");
+					return ("Wasted Chunk at ("+w.getName()+", "+c.getX()+", "+c.getZ()+")");
 				}
-				for(String s : (ArrayList<String>)bchunks.clone()){
-					if((s.contains(":q"))&&(s.contains(w.getName()+":"))){
-						String[] p = s.split(":");
-						Chunk c = w.getChunkAt(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
-						burnChunk(c);
-						w.refreshChunk(c.getX(), c.getZ());
-						c.unload(true);
-						bchunks.remove(s);
-						bchunks.add(getData(c)+"b");
-						break inner;
-					}
+			}
+			for(String s : (ArrayList<String>)bchunks.clone()){
+				if((s.contains(":q"))&&(s.contains(w.getName()+":"))){
+					String[] p = s.split(":");
+					Chunk c = w.getChunkAt(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+					burnChunk(c);
+					w.refreshChunk(c.getX(), c.getZ());
+					c.unload(true);
+					bchunks.remove(s);
+					bchunks.add(getData(c)+"b");
+					return ("Wasted Chunk at ("+w.getName()+", "+c.getX()+", "+c.getZ()+")");
 				}
-			}else{
-				int c = 0;
-				for(String s : (ArrayList<String>)bchunks.clone()){
-					if((s.contains(":r"))&&(s.contains(w.getName()+":"))){
-						String[] p = s.split(":");
-						w.regenerateChunk(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
-						w.refreshChunk(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
-						bchunks.remove(s);
-						c++;
-						if(c==25){
-							break;
-						}
+			}
+		}else{
+			int c = 0;
+			for(String s : (ArrayList<String>)bchunks.clone()){
+				if((s.contains(":r"))&&(s.contains(w.getName()+":"))){
+					String[] p = s.split(":");
+					w.regenerateChunk(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+					w.refreshChunk(Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+					bchunks.remove(s);
+					c++;
+					if(c==25){
+						break;
 					}
 				}
 			}
 		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
