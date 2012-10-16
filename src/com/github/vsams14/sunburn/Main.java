@@ -37,9 +37,9 @@ public class Main extends JavaPlugin {
 		
 		config.loadConf();
 		config.reConf();
-		util.loadArmor();
 		config.genConf();
 		config.loadChunks();
+		config.loadArmor();
 		
 		update.readRSS();
 		
@@ -51,7 +51,7 @@ public class Main extends JavaPlugin {
 		    // Failed to submit the data :-(
 		}
 
-		//Player-burn + usmite, 1/2 Second, 1 second delay
+		//Player-burn + usmite, 1/4 Second, 1 second delay
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
 			public void run() {
@@ -60,17 +60,16 @@ public class Main extends JavaPlugin {
 				if(config.autoburn){
 					util.getAutoBurnedChunks();
 					for(World w : getServer().getWorlds()){
-						util.wasteOneChunk(w);
-						//String s = util.wasteOneChunk(w);
-						//if((s!=null)&&(config.broadcastchunks==true)){
-						//	log.info(s);
-						//}
+						String s = util.wasteOneChunk(w);
+						if((s!=null)&&(config.broadcastchunks==true)){
+							com.broadcast(s);
+						}
 					}					
 				}
 			}
 
 		}
-		, 20L , 10L);
+		, 20L , 5L);
 
 		//Updates, 15 Minutes
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()

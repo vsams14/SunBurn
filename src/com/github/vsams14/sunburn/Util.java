@@ -1,6 +1,8 @@
 package com.github.vsams14.sunburn;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.Chunk;
 import org.bukkit.Material;
@@ -18,14 +20,11 @@ import com.github.vsams14.sunburn.extras.WorldTime;
 public class Util {
 
 	ItemStack helm, chest, pants, boots;
-	Material MattH, MattC, MattL, MattB;
-	int totald, hd1, cd1, ld1, bd1;
 	int durability, al = 4096;
-	float hd, cd, ld, bd;
 	String armtype, counter="";
 	private Main sunburn;
 	ArrayList<String> bchunks = new ArrayList<String>();
-
+	Map<Integer, Integer> armors = new HashMap<Integer, Integer>();
 
 	public Util(Main sunburn){
 		this.sunburn = sunburn;
@@ -82,54 +81,22 @@ public class Util {
 	public boolean hasArmor(Player player){
 		getArmor(player);
 		if(helm != null){
-			if(helm.getType() == MattH){
-				return true;
-			}
+			return true;
 		}
 		if(chest != null){
-			if(chest.getType() == MattC){
-				return true;
-			}
+			return true;
 		}
 		if(pants != null){
-			if(pants.getType() == MattL){
-				return true;
-			}
+			return true;
 		}
 		if(boots != null){
-			if(boots.getType() == MattB){
-				return true;
-			}
+			return true;
 		}
 		return false;
 	}
 
 	public boolean isPlayer(LivingEntity e) {
 		return e instanceof Player;
-	}
-
-	public void addArmor(){
-		totald=0;
-		if(helm != null){
-			if(helm.getType() == MattH){
-				totald+=hd;
-			}
-		}
-		if(chest != null){
-			if(chest.getType() == MattC){
-				totald+=cd;
-			}
-		}
-		if(pants != null){
-			if(pants.getType() == MattL){
-				totald+=ld;
-			}
-		}
-		if(boots != null){
-			if(boots.getType() == MattB){
-				totald+=bd;
-			}
-		}
 	}
 
 	public boolean isWater(Block l){
@@ -140,133 +107,44 @@ public class Util {
 		}
 	}
 
-	public void loadArmor(){
-		armtype = sunburn.config.conf.getString("Armor_Type");
-		if(armtype.equalsIgnoreCase("leather")){
-			MattH = Material.LEATHER_HELMET;
-			MattC = Material.LEATHER_CHESTPLATE;
-			MattL = Material.LEATHER_LEGGINGS;
-			MattB = Material.LEATHER_BOOTS;
-			hd=56;hd1=56;
-			cd=82;cd1=82;
-			ld=76;ld1=76;
-			bd=66;bd1=66;
-		}else if(armtype.equalsIgnoreCase("iron")){
-			MattH = Material.IRON_HELMET;
-			MattC = Material.IRON_CHESTPLATE;
-			MattL = Material.IRON_LEGGINGS;
-			MattB = Material.IRON_BOOTS;
-			hd=166;hd1=166;
-			cd=242;cd1=242;
-			ld=226;ld1=226;
-			bd=196;bd1=196;
-		}else if(armtype.equalsIgnoreCase("gold")){
-			MattH = Material.GOLD_HELMET;
-			MattC = Material.GOLD_CHESTPLATE;
-			MattL = Material.GOLD_LEGGINGS;
-			MattB = Material.GOLD_BOOTS;
-			hd=78;hd1=78;
-			cd=114;cd1=114;
-			ld=106;ld1=106;
-			bd=92;bd1=92;
-		}else if(armtype.equalsIgnoreCase("diamond")){
-			MattH = Material.DIAMOND_HELMET;
-			MattC = Material.DIAMOND_CHESTPLATE;
-			MattL = Material.DIAMOND_LEGGINGS;
-			MattB = Material.DIAMOND_BOOTS;
-			hd=364;hd1=364;
-			cd=529;cd1=529;
-			ld=496;ld1=496;
-			bd=430;bd1=430;
-		}else if(armtype.equalsIgnoreCase("chain")){
-			MattH = Material.CHAINMAIL_HELMET;
-			MattC = Material.CHAINMAIL_CHESTPLATE;
-			MattL = Material.CHAINMAIL_LEGGINGS;
-			MattB = Material.CHAINMAIL_BOOTS;
-			hd=78;hd1=78;
-			cd=114;cd1=114;
-			ld=106;ld1=106;
-			bd=92;bd1=92;
-		}
-	}
-
 	public void run8(Player player){
 		if(sunburn.config.armor){
+			if(hasArmor(player)){
+				Block b = player.getLocation().getBlock().getRelative(BlockFace.UP);
+				byte B = b.getLightFromBlocks();
+				byte T = b.getLightLevel();
+				float tdur = 0;
+				boolean fireres;
 
-			Block b = player.getLocation().getBlock().getRelative(BlockFace.UP);
-			byte B = b.getLightFromBlocks();
-			byte T = b.getLightLevel();
+				getArmor(player);
+				PlayerInventory inv = player.getInventory();
 
-			loadArmor();
-			float tdur = 0;
+				if(player.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)){
+					fireres = true;
+				}else{
+					fireres = false;
+				}
 
-			getArmor(player);
-			addArmor();
-
-			boolean fireres;
-			if(player.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)){
-				fireres = true;
-			}else{
-				fireres = false;
-			}
-
-			if((T>=14)&&(B<14)){
-				if((sunburn.config.bPlayer) && (!fireres)){
-					if(!isWater(player.getLocation().getBlock())){
-						if(totald>0){
-							tdur += 163/durability;
+				if((T>=14)&&(B<14)){
+					if((sunburn.config.bPlayer) && (!fireres)){
+						if(!isWater(player.getLocation().getBlock())){
+							tdur = (1/durability);
+							tdur *= 0.1;
 						}
 					}
 				}
-			}
-
-			float p2 = (float) (hd+cd+ld+bd);
-			float proportion = (float) 1819/p2;
-			PlayerInventory inv = player.getInventory();
-
-			if(helm != null){
-				if(helm.getType() == MattH){
-					hd /= totald;
-					hd *= tdur;
-					hd /= proportion;
-					helm.setDurability((short) Math.round(helm.getDurability()+hd));
-					if(helm.getDurability()>=hd1){
-						inv.setHelmet(null);
+				
+				if(helm!=null){
+					float damage = tdur;
+					damage *= armors.get(helm.getTypeId());
+					if(!((helm.getDurability() + damage) >= armors.get(helm.getTypeId()))){
+						helm.setDurability((short) (helm.getDurability() + damage));
+					}else{
+						inv.removeItem(helm);
+						helm = null;
 					}
 				}
-			}
-			if(chest != null){
-				if(chest.getType() == MattC){
-					cd /= totald;
-					cd *= tdur;
-					cd /= proportion;
-					chest.setDurability((short) Math.round(chest.getDurability()+cd));
-					if(chest.getDurability()>=cd1){
-						inv.setChestplate(null);
-					}
-				}
-			}
-			if(pants != null){
-				if(pants.getType() == MattL){
-					ld /= totald;
-					ld *= tdur;
-					ld /= proportion;
-					pants.setDurability((short) Math.round(pants.getDurability()+ld));
-					if(pants.getDurability()>=ld1){
-						inv.setLeggings(null);
-					}
-				}
-			}
-			if(boots != null){
-				if(boots.getType() == MattB){
-					bd /= totald;
-					bd *= tdur;
-					bd /= proportion;
-					boots.setDurability((short) Math.round(boots.getDurability()+bd));
-					if(boots.getDurability()>=bd1){
-						inv.setBoots(null);
-					}
-				}
+				
 			}
 		}
 	}
@@ -316,7 +194,7 @@ public class Util {
 	public void burnChunk(Chunk chunk){
 		Block b3;
 
-		for(int ix = 0; ix<3; ix+=1){
+		for(int ix = 0; ix<2; ix++){
 			for(int x = 0; x<16; x+=1){
 				for(int z = 0; z<16; z+=1){
 
@@ -466,7 +344,8 @@ public class Util {
 					bchunks.remove(s);
 					c++;
 					if(c==25){
-						break;
+						sunburn.com.broadcast(count());
+						c = 0;
 					}
 				}
 			}

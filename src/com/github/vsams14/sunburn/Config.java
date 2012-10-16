@@ -140,16 +140,6 @@ public class Config{
 		worldConfig.set("wasteland_worlds", wasteworlds);
 		worldConfig.set("exclude_players", pwl);
 		saveConf(worldConfig, f);
-
-		for(World world : sunburn.getServer().getWorlds()){
-			f = new File(sunburn.getDataFolder(), world.getName()+".yml");
-			worldConfig = new YamlConfiguration();
-			loadcConf(f, sunburn.getResource("World.yml"));
-			if(sunburn.util.isInteger(worldConfig.getString("wdur"))){
-				worldConfig.set("wdur", false);
-				saveConf(worldConfig, f);
-			}			 
-		}
 	}
 
 	@SuppressWarnings("unused")
@@ -182,6 +172,19 @@ public class Config{
 			wtime[i].wdur = worldConfig.getBoolean("wdur");
 			saveConf(worldConfig, f);
 			i+=1;
+		}
+	}
+	
+	public void loadArmor(){
+		worldConfig = new YamlConfiguration();
+		File f = new File(sunburn.getDataFolder(), "armor.yml");
+		loadcConf(f, sunburn.getResource("armor.yml"));
+		List<String> armorIDs = worldConfig.getStringList("items");
+		for(String s : armorIDs){
+			sunburn.com.broadcast(s);
+			//int ID = Integer.parseInt(s);
+			//int dur = worldConfig.getInt(s);
+			//sunburn.util.armors.put(ID, dur);
 		}
 	}
 

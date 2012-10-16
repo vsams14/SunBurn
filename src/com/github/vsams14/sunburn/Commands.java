@@ -208,6 +208,26 @@ public class Commands {
 									return true;
 								}
 							}
+						}else if(args[0].equalsIgnoreCase("allchunks")){
+							broadcast("allchunks");
+							World w;
+							if(args[1].equalsIgnoreCase("world")){
+								w = sendee.getWorld();
+							}else{
+								w = sunburn.getServer().getWorld(args[1]);
+							}
+							if(w!=null){
+								broadcast("world "+w.getName());
+								for(Chunk c : w.getLoadedChunks()){
+									sunburn.util.burnChunk(c);
+									w.refreshChunk(c.getX(), c.getZ());
+									sunburn.util.bchunks.add(sunburn.util.getData(c)+"b");
+									broadcast("Wasted Chunk at ("+w.getName()+", "+c.getX()+", "+c.getZ()+")");
+								}	
+							}else{
+								sendee.sendMessage("The world "+args[1]+" is invalid!");
+							}
+							return true;
 						}
 					}
 				}
