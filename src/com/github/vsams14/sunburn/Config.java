@@ -181,10 +181,9 @@ public class Config{
 		loadcConf(f, sunburn.getResource("armor.yml"));
 		List<String> armorIDs = worldConfig.getStringList("items");
 		for(String s : armorIDs){
-			sunburn.com.broadcast(s);
-			//int ID = Integer.parseInt(s);
-			//int dur = worldConfig.getInt(s);
-			//sunburn.util.armors.put(ID, dur);
+			int ID = Integer.parseInt(s);
+			int dur = worldConfig.getInt(s);
+			sunburn.util.armors.put(ID, dur);
 		}
 	}
 

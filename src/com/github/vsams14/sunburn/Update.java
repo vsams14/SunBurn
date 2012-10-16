@@ -35,7 +35,6 @@ public class Update{
 	URL u = null;
 	String title, link, version, thisversion;
 	int changes;
-	boolean off = false;
 	File folder;
 	private Main sunburn;
 
@@ -108,7 +107,6 @@ public class Update{
 		}
 
 		changes =  a-b;
-		off = !(b>=a);
 		return b >= a;
 	}
 

@@ -26,6 +26,7 @@ public class Main extends JavaPlugin {
 	public Update update;
 	int timer = 15;
 	int runs = 0;
+	boolean shutdown = false;
 
 	public void onEnable(){
 		log = getLogger();
@@ -34,29 +35,27 @@ public class Main extends JavaPlugin {
 		burn = new Burn(this);
 		config = new Config(this);
 		update = new Update(this);
-		
+
 		config.loadConf();
 		config.reConf();
 		config.genConf();
 		config.loadChunks();
 		config.loadArmor();
-		
+
 		update.readRSS();
-		
+
 		try {
-		    Metrics metrics = new Metrics(this);
-		    metrics.findCustomData(this);
-		    metrics.start();
+			Metrics metrics = new Metrics(this);
+			metrics.findCustomData(this);
+			metrics.start();
 		} catch (IOException e) {
-		    // Failed to submit the data :-(
+			// Failed to submit the data :-(
 		}
 
-		//Player-burn + usmite, 1/4 Second, 1 second delay
+		//AWG, 1/4 Second, 1 second delay
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
 			public void run() {
-				burn.BurnMain();
-				burn.usmite();
 				if(config.autoburn){
 					util.getAutoBurnedChunks();
 					for(World w : getServer().getWorlds()){
@@ -92,10 +91,8 @@ public class Main extends JavaPlugin {
 							runs += 1;
 						}
 					}else{
-						if(runs == 0){
-							log.info("");
-							log.info("");
-						}
+						log.info("");
+						log.info("");
 
 						if(update.changes<10){
 							log.info("There have been minor changes or bugfixes. UPDATING!");
@@ -107,7 +104,8 @@ public class Main extends JavaPlugin {
 						try {
 							if(config.canupdate){
 								update.update();
-								log.info("The server will now shut down.");	
+								log.info("The server will now shut down.");
+								shutdown = true;
 							}else{
 								log.info("Updating is DISABLED! Please change your configuration!");
 							}
@@ -117,11 +115,8 @@ public class Main extends JavaPlugin {
 							e.printStackTrace();
 						}
 
-						if(runs == 0){
-							log.info("");
-							log.info("");
-							runs += 1;
-						}
+						log.info("");
+						log.info("");
 					}	
 				}else{
 					if(runs==0){
@@ -134,11 +129,11 @@ public class Main extends JavaPlugin {
 		}
 		, 0L , 18000L);
 
-		//Auto-off, 1 second
+		//Auto-off, Armor, 1 second
 		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
 			public void run() {					
-				if(update.off){
+				if(shutdown){
 					if(timer>0){
 						if(timer<=10){
 							log.info("Shutdown in: "+timer);
@@ -152,15 +147,6 @@ public class Main extends JavaPlugin {
 		}
 		, 0L , 20L);
 
-		//Armor damage, 8 seconds
-		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
-		{
-			public void run() {					
-				burn.armor();
-			}
-		}
-		, 0L , 160L);
-		
 		//Status messages, 2 seconds
 		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
 		{
@@ -181,35 +167,50 @@ public class Main extends JavaPlugin {
 			}
 		}
 		, 0L , 40L);
+
+		//player-burn, usmite, 1/2 seconds, 1 second delay
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
+		{
+			public void run() {
+				burn.BurnMain();
+				burn.usmite();
+			}
+		}
+		, 20L , 10L);
+		
+		//Armor 12 seconds
+		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
+		{
+			public void run() {
+				burn.armor();
+			}
+		}
+		, 0L , 240L);
+	}
+	
+	public void broadcast(String s){
+		com.broadcast(s);
 	}
 
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
-		if(!update.off){
-			boolean ret = com.com(sender, cmd, commandLabel, args);
-			config.reConf();
-			return ret;
-		}else{
-			com.broadcast("Waiting for update. Sunburn is disabled");
-			log.info("Waiting for update. Sunburn is disabled");
-			return true;
-		}
+		boolean ret = com.com(sender, cmd, commandLabel, args);
+		config.reConf();
+		return ret;
 	}
 
 	public void onDisable(){
-		if(!update.off){
-			//log.info("Saving Configuration...");
-			config.saveChunks();
-			config.reConf();
-			WorldTime[] wtime = config.wtime;
-			for(int x = 0; x < wtime.length; x++){
-				config.worldConfig = new YamlConfiguration();
-				File p = new File(getDataFolder(), wtime[x].name+".yml");
-				config.loadcConf(p, getResource("World.yml"));
-				config.worldConfig.set("locktime", wtime[x].locktime);
-				config.worldConfig.set("wdur", wtime[x].wdur);
-				config.worldConfig.set("locked", wtime[x].locked);
-				config.saveConf(config.worldConfig, p);
-			}
+		//log.info("Saving Configuration...");
+		config.saveChunks();
+		config.reConf();
+		WorldTime[] wtime = config.wtime;
+		for(int x = 0; x < wtime.length; x++){
+			config.worldConfig = new YamlConfiguration();
+			File p = new File(getDataFolder(), wtime[x].name+".yml");
+			config.loadcConf(p, getResource("World.yml"));
+			config.worldConfig.set("locktime", wtime[x].locktime);
+			config.worldConfig.set("wdur", wtime[x].wdur);
+			config.worldConfig.set("locked", wtime[x].locked);
+			config.saveConf(config.worldConfig, p);
 		}
 	}
 }

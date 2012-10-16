@@ -7,7 +7,7 @@
 # 'ID' : durability
 # Add ID to items list as well.
 #
-# Item will take 2%, 2.5%, 3.33%, 5% and 10% damage every second.
+# Item will take 2%, 4%, 6%, 8% and 10% damage every second.
 # (5, 4, 3, 2, 1 durability in config.yml respectively)
 
 items: 

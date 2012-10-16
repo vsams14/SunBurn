@@ -107,13 +107,14 @@ public class Util {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public void run8(Player player){
 		if(sunburn.config.armor){
 			if(hasArmor(player)){
 				Block b = player.getLocation().getBlock().getRelative(BlockFace.UP);
 				byte B = b.getLightFromBlocks();
 				byte T = b.getLightLevel();
-				float tdur = 0;
+				float tdur = 6, damage;
 				boolean fireres;
 
 				getArmor(player);
@@ -128,20 +129,57 @@ public class Util {
 				if((T>=14)&&(B<14)){
 					if((sunburn.config.bPlayer) && (!fireres)){
 						if(!isWater(player.getLocation().getBlock())){
-							tdur = (1/durability);
-							tdur *= 0.1;
+							tdur -= (float) durability;
+							tdur *= .02;
 						}
 					}
 				}
 				
 				if(helm!=null){
-					float damage = tdur;
+					damage = tdur;
 					damage *= armors.get(helm.getTypeId());
 					if(!((helm.getDurability() + damage) >= armors.get(helm.getTypeId()))){
 						helm.setDurability((short) (helm.getDurability() + damage));
 					}else{
-						inv.removeItem(helm);
+						inv.setHelmet(null);
+						player.updateInventory();
 						helm = null;
+					}
+				}
+				
+				if(chest!=null){
+					damage = tdur;
+					damage *= armors.get(chest.getTypeId());
+					if(!((chest.getDurability() + damage) >= armors.get(chest.getTypeId()))){
+						chest.setDurability((short) (chest.getDurability() + damage));
+					}else{
+						inv.setChestplate(null);
+						player.updateInventory();
+						chest = null;
+					}
+				}
+				
+				if(pants!=null){
+					damage = tdur;
+					damage *= armors.get(pants.getTypeId());
+					if(!((pants.getDurability() + damage) >= armors.get(pants.getTypeId()))){
+						pants.setDurability((short) (pants.getDurability() + damage));
+					}else{
+						inv.setLeggings(null);
+						player.updateInventory();
+						pants = null;
+					}
+				}
+				
+				if(boots!=null){
+					damage = tdur;
+					damage *= armors.get(boots.getTypeId());
+					if(!((boots.getDurability() + damage) >= armors.get(boots.getTypeId()))){
+						boots.setDurability((short) (boots.getDurability() + damage));
+					}else{
+						inv.setBoots(null);
+						player.updateInventory();
+						boots = null;
 					}
 				}
 				
