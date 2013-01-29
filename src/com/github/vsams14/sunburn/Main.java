@@ -148,7 +148,7 @@ public class Main extends JavaPlugin {
 		, 0L , 20L);
 
 		//Status messages, 2 seconds
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
+		getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable()
 		{
 			public void run() {	
 				if(config.broadcastchunks){
@@ -169,7 +169,7 @@ public class Main extends JavaPlugin {
 		, 0L , 40L);
 
 		//player-burn, usmite, 1/2 seconds, 1 second delay
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
+		getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable()
 		{
 			public void run() {
 				burn.BurnMain();
@@ -179,7 +179,7 @@ public class Main extends JavaPlugin {
 		, 20L , 10L);
 		
 		//Armor 12 seconds
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
+		getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable()
 		{
 			public void run() {
 				burn.armor();
