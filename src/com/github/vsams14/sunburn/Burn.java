@@ -1,6 +1,7 @@
 package com.github.vsams14.sunburn;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,8 +29,13 @@ public class Burn {
 				sunburn.util.lockTime(wd);
 			}
 			if(sunburn.config.worlds.contains(w.getName())){
-				List<LivingEntity> creatures = w.getLivingEntities();
-				for (LivingEntity m : creatures) {
+				
+				Iterator<LivingEntity> creatures = w.getLivingEntities().iterator();
+				
+				while (creatures.hasNext())
+				{
+					LivingEntity m = creatures.next();
+
 					if (!sunburn.util.isPlayer(m)) {
 						burnAnimal(m);
 					}
