@@ -2,6 +2,7 @@ package com.github.vsams14.sunburn;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import javax.swing.text.BadLocationException;
@@ -24,6 +25,7 @@ public class Main extends JavaPlugin {
 	public Burn burn;
 	public Config config;
 	public Update update;
+	public Main sunburn;
 	int timer = 15;
 	int runs = 0;
 	boolean shutdown = false;
@@ -35,6 +37,8 @@ public class Main extends JavaPlugin {
 		burn = new Burn(this);
 		config = new Config(this);
 		update = new Update(this);
+		
+		this.sunburn = this;
 
 		config.loadConf();
 		config.reConf();
@@ -174,6 +178,22 @@ public class Main extends JavaPlugin {
 			public void run() {
 				burn.BurnMain();
 				burn.usmite();
+			}
+		}
+		, 20L , 10L);
+
+		// Lock world time based on world.yml settings, 1/2 seconds, 1 second delay
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
+		{
+			public void run() {
+				Iterator<World> wds = sunburn.getServer().getWorlds().iterator();
+				
+				while (wds.hasNext())
+				{
+					World wd = wds.next();
+
+					sunburn.util.lockTime(wd);
+				}
 			}
 		}
 		, 20L , 10L);

@@ -24,9 +24,8 @@ public class Burn {
 	public void BurnMain(){
 		for(Player player :  sunburn.getServer().getOnlinePlayers()){
 			World w = player.getWorld();
-			for(World wd : sunburn.getServer().getWorlds()){
-				sunburn.util.lockTime(wd);
-			}
+			
+
 			if(sunburn.config.worlds.contains(w.getName())){
 				
 				Iterator<LivingEntity> creatures = w.getLivingEntities().iterator();
