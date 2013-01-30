@@ -173,7 +173,7 @@ public class Main extends JavaPlugin {
 		, 0L , 40L);
 
 		//player-burn, usmite, 1/2 seconds, 1 second delay
-		getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable()
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
 			public void run() {
 				burn.BurnMain();
