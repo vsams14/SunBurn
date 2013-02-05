@@ -2,6 +2,7 @@ package com.github.vsams14.sunburn;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.logging.Logger;
 
 import javax.swing.text.BadLocationException;
@@ -24,6 +25,7 @@ public class Main extends JavaPlugin {
 	public Burn burn;
 	public Config config;
 	public Update update;
+	public Main sunburn;
 	int timer = 15;
 	int runs = 0;
 	boolean shutdown = false;
@@ -35,6 +37,8 @@ public class Main extends JavaPlugin {
 		burn = new Burn(this);
 		config = new Config(this);
 		update = new Update(this);
+		
+		this.sunburn = this;
 
 		config.loadConf();
 		config.reConf();
@@ -148,7 +152,7 @@ public class Main extends JavaPlugin {
 		, 0L , 20L);
 
 		//Status messages, 2 seconds
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
+		getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable()
 		{
 			public void run() {	
 				if(config.broadcastchunks){
@@ -169,7 +173,7 @@ public class Main extends JavaPlugin {
 		, 0L , 40L);
 
 		//player-burn, usmite, 1/2 seconds, 1 second delay
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
 		{
 			public void run() {
 				burn.BurnMain();
@@ -177,9 +181,25 @@ public class Main extends JavaPlugin {
 			}
 		}
 		, 20L , 10L);
+
+		// Lock world time based on world.yml settings, 1/2 seconds, 1 second delay
+		getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
+		{
+			public void run() {
+				Iterator<World> wds = sunburn.getServer().getWorlds().iterator();
+				
+				while (wds.hasNext())
+				{
+					World wd = wds.next();
+
+					sunburn.util.lockTime(wd);
+				}
+			}
+		}
+		, 20L , 10L);
 		
 		//Armor 12 seconds
-		getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
+		getServer().getScheduler().runTaskTimerAsynchronously(this, new Runnable()
 		{
 			public void run() {
 				burn.armor();
