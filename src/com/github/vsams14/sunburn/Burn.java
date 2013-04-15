@@ -41,8 +41,10 @@ public class Burn {
 
 				if(!sunburn.config.pwl.contains(player.getName())){
 					Block b = player.getLocation().getBlock().getRelative(BlockFace.UP);
-					byte B = b.getLightFromBlocks();
+
+					byte S = b.getLightFromSky();
 					byte T = b.getLightLevel();
+
 
 					boolean fireres;
 					if(player.hasPotionEffect(PotionEffectType.FIRE_RESISTANCE)){
@@ -51,7 +53,7 @@ public class Burn {
 						fireres = false;
 					}
 					
-					if((T>=14)&&(B<14)){
+					if((T>=14)&&(S>=14)){
 						if((player.getFireTicks()<=0) && (sunburn.config.bPlayer) && (!fireres)){
 							if(!sunburn.util.isWater(player.getLocation().getBlock())){
 								player.setFireTicks(99999999);
